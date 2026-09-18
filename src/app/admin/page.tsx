@@ -32,11 +32,13 @@ function formatTimestamp(timestamp: string | null) {
     return "Never";
   }
 
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "America/Denver",
-  }).format(new Date(timestamp)) + " (MST)";
+  return (
+    new Intl.DateTimeFormat("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone: "America/Denver",
+    }).format(new Date(timestamp)) + " (MST)"
+  );
 }
 
 function shuffle<T>(items: T[]) {
