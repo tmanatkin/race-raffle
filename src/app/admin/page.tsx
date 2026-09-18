@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -382,31 +383,57 @@ export default function AdminPage() {
               <p className="text-sm text-muted-foreground">Prizes will be assigned in this order.</p>
             </div>
             <div className="max-h-96 overflow-y-auto rounded-md border">
-              <div className="sticky top-0 z-10 grid grid-cols-[4rem_5rem_1fr_6rem] border-b bg-muted px-4 py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <span>Position</span>
-                <span>Bib #</span>
-                <span>Result</span>
-                <span>Redeemed</span>
-              </div>
-              <ol className="divide-y">
-                {generatedList.map((entry) => (
-                  <li
-                    className={`grid grid-cols-[4rem_5rem_1fr_6rem] items-center px-4 py-3 text-sm ${
-                      entry.prizeType ? "bg-emerald-50/60 dark:bg-emerald-950/20" : "bg-muted/20 text-muted-foreground"
-                    }`}
-                    key={entry.position}
-                  >
-                    <span>{entry.position}</span>
-                    <span>{entry.bibNumber ?? "-"}</span>
-                    <span
-                      className={entry.prizeType ? "font-medium text-emerald-800 dark:text-emerald-300" : undefined}
+              <table className="w-full table-fixed text-sm">
+                <thead className="sticky top-0 z-10 bg-muted text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <tr>
+                    <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                      Position
+                    </th>
+                    <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                      Result
+                    </th>
+                    <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                      Bib #
+                    </th>
+                    <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                      Redeemed
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {generatedList.map((entry) => (
+                    <tr
+                      className={
+                        entry.prizeType
+                          ? "bg-emerald-50/60 dark:bg-emerald-950/20"
+                          : "bg-muted/20 text-muted-foreground"
+                      }
+                      key={entry.position}
                     >
-                      {entry.prizeType ? "Prize" : "No prize"}
-                    </span>
-                    <span>{entry.redeemedAt ? "Yes" : "-"}</span>
-                  </li>
-                ))}
-              </ol>
+                      <td className="px-4 py-3">{entry.position}</td>
+                      <td
+                        className={
+                          entry.prizeType ? "px-4 py-3 font-medium text-emerald-800 dark:text-emerald-300" : "px-4 py-3"
+                        }
+                      >
+                        {entry.prizeType ? "Prize" : "No prize"}
+                      </td>
+                      <td className="px-4 py-3 text-left">{entry.bibNumber ?? "-"}</td>
+                      <td className="px-4 py-3">
+                        <div>
+                          {entry.bibNumber === null || !entry.prizeType ? (
+                            "-"
+                          ) : entry.redeemedAt ? (
+                            <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                          ) : (
+                            <XCircle className="size-4 text-muted-foreground" />
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </section>
         ) : null}
