@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-type BibClaimResult = {
-  status: "claimed" | "already_claimed" | "invalid" | "no_generation" | "list_exhausted";
+type BibCheckResult = {
+  status: "checked" | "already_checked" | "invalid" | "no_generation" | "list_exhausted";
   bib_number: number;
   generation_id: string | null;
   raffle_position: number | null;
@@ -19,7 +19,7 @@ export async function GET() {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: "Unable to load bib number settings." }, { status: 500 });
+    return NextResponse.json({ error: "Unable to load bib number range settings." }, { status: 500 });
   }
 
   return NextResponse.json({
@@ -37,33 +37,33 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Enter a whole number." }, { status: 400 });
   }
 
-  const { data: claimData, error: claimError } = await supabase
-    .rpc("claim_bib_number", { p_bib_number: bibNumber })
+  const { data: checkData, error: checkError } = await supabase
+    .rpc("check_bib_number", { p_bib_number: bibNumber })
     .single();
-  const claim = claimData as BibClaimResult | null;
+  const check = checkData as BibCheckResult | null;
 
-  if (claimError || !claim) {
-    return NextResponse.json({ error: "Unable to claim bib number." }, { status: 500 });
+  if (checkError || !check) {
+    return NextResponse.json({ error: "Unable to check bib number." }, { status: 500 });
   }
 
-  if (claim.status === "invalid") {
+  if (check.status === "invalid") {
     return NextResponse.json({ error: "Invalid bib number." }, { status: 400 });
   }
 
-  if (claim.status === "no_generation") {
+  if (check.status === "no_generation") {
     return NextResponse.json({ error: "Prize raffle is not available yet." }, { status: 409 });
   }
 
-  if (claim.status === "list_exhausted") {
-    return NextResponse.json({ error: "The raffle list is full." }, { status: 409 });
+  if (check.status === "list_exhausted") {
+    return NextResponse.json({ error: "The raffle has reached its participant limit." }, { status: 409 });
   }
 
   return NextResponse.json({
-    claimed: claim.status === "claimed",
-    alreadyClaimed: claim.status === "already_claimed",
-    bibNumber: claim.bib_number,
-    rafflePosition: claim.raffle_position,
-    prizeType: claim.prize_type,
-    redeemedAt: claim.redeemed_at,
+    checked: check.status === "checked",
+    alreadyChecked: check.status === "already_checked",
+    bibNumber: check.bib_number,
+    rafflePosition: check.raffle_position,
+    prizeType: check.prize_type,
+    redeemedAt: check.redeemed_at,
   });
 }

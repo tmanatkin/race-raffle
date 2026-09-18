@@ -12,7 +12,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [claimedBibNumber, setClaimedBibNumber] = useState<number | null>(null);
+  const [checkedBibNumber, setCheckedBibNumber] = useState<number | null>(null);
   const [prizeType, setPrizeType] = useState<"prize" | null>(null);
   const [redeemedAt, setRedeemedAt] = useState<string | null>(null);
   const [redeemError, setRedeemError] = useState("");
@@ -21,7 +21,7 @@ export default function Home() {
   useEffect(() => {
     async function loadBibSettings() {
       try {
-        const response = await fetch("/api/bib-claims");
+        const response = await fetch("/api/bib-checks");
         const result = (await response.json()) as {
           lowestBibNumber?: number;
           highestBibNumber?: number;
@@ -44,7 +44,7 @@ export default function Home() {
     void loadBibSettings();
   }, []);
 
-  async function claimBibNumber(event: FormEvent<HTMLFormElement>) {
+  async function checkBibNumber(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
 
@@ -66,14 +66,14 @@ export default function Home() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/bib-claims", {
+      const response = await fetch("/api/bib-checks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bibNumber }),
       });
       const result = (await response.json()) as {
         error?: string;
-        alreadyClaimed?: boolean;
+        alreadyChecked?: boolean;
         bibNumber?: number;
         rafflePosition?: number;
         prizeType?: "prize" | null;
@@ -81,22 +81,22 @@ export default function Home() {
       };
 
       if (!response.ok) {
-        throw new Error(result.error ?? "Unable to claim that bib number.");
+        throw new Error(result.error ?? "Unable to check bib number.");
       }
 
-      setClaimedBibNumber(result.bibNumber ?? null);
+      setCheckedBibNumber(result.bibNumber ?? null);
       setPrizeType(result.prizeType ?? null);
       setRedeemedAt(result.redeemedAt ?? null);
       setBibNumber("");
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unable to claim that bib number.");
+      setError(submitError instanceof Error ? submitError.message : "Unable to check bib number.");
     } finally {
       setIsSubmitting(false);
     }
   }
 
   async function redeemPrize() {
-    if (claimedBibNumber === null) {
+    if (checkedBibNumber === null) {
       return;
     }
 
@@ -104,20 +104,20 @@ export default function Home() {
     setRedeemError("");
 
     try {
-      const response = await fetch("/api/bib-claims/redeem", {
+      const response = await fetch("/api/bib-checks/redeem", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bibNumber: claimedBibNumber }),
+        body: JSON.stringify({ bibNumber: checkedBibNumber }),
       });
       const result = (await response.json()) as { error?: string; redeemedAt?: string | null };
 
       if (!response.ok) {
-        throw new Error(result.error ?? "Unable to redeem that prize.");
+        throw new Error(result.error ?? "Unable to redeem prize.");
       }
 
       setRedeemedAt(result.redeemedAt ?? null);
     } catch (redeemPrizeError) {
-      setRedeemError(redeemPrizeError instanceof Error ? redeemPrizeError.message : "Unable to redeem that prize.");
+      setRedeemError(redeemPrizeError instanceof Error ? redeemPrizeError.message : "Unable to redeem prize.");
     } finally {
       setIsRedeeming(false);
     }
@@ -125,13 +125,13 @@ export default function Home() {
 
   function checkAnotherBibNumber() {
     setError("");
-    setClaimedBibNumber(null);
+    setCheckedBibNumber(null);
     setPrizeType(null);
     setRedeemedAt(null);
     setRedeemError("");
   }
 
-  const step = redeemedAt ? "redeemed" : claimedBibNumber !== null ? "result" : "form";
+  const step = redeemedAt ? "redeemed" : checkedBibNumber !== null ? "result" : "form";
 
   return (
     <main className="flex min-h-screen items-start justify-center p-8">
@@ -139,7 +139,7 @@ export default function Home() {
         <BibNumberForm
           bibNumber={bibNumber}
           onBibNumberChange={setBibNumber}
-          onSubmit={claimBibNumber}
+          onSubmit={checkBibNumber}
           isLoading={isLoading}
           isSubmitting={isSubmitting}
           error={error}

@@ -54,17 +54,17 @@ export async function GET() {
     return NextResponse.json({ error: "Unable to load the saved raffle." }, { status: 500 });
   }
 
-  const { data: claims, error: claimsError } = await supabase
-    .from("bib_claims")
+  const { data: checks, error: checksError } = await supabase
+    .from("bib_checks")
     .select("bib_number, raffle_position, redeemed_at")
     .eq("generation_id", generation.id);
 
-  if (claimsError) {
+  if (checksError) {
     return NextResponse.json({ error: "Unable to load the saved raffle." }, { status: 500 });
   }
 
-  const bibByPosition = new Map(claims.map((claim) => [claim.raffle_position, claim.bib_number]));
-  const redeemedAtByPosition = new Map(claims.map((claim) => [claim.raffle_position, claim.redeemed_at]));
+  const bibByPosition = new Map(checks.map((check) => [check.raffle_position, check.bib_number]));
+  const redeemedAtByPosition = new Map(checks.map((check) => [check.raffle_position, check.redeemed_at]));
 
   return NextResponse.json({
     generation: {
@@ -113,9 +113,9 @@ export async function POST(request: Request) {
 
   const generationId = randomUUID();
   const supabase = await createClient();
-  const { error: claimsResetError } = await supabase.from("bib_claims").delete().not("bib_number", "is", null);
+  const { error: checksResetError } = await supabase.from("bib_checks").delete().not("bib_number", "is", null);
 
-  if (claimsResetError) {
+  if (checksResetError) {
     return NextResponse.json({ error: "Unable to reset bib assignments." }, { status: 500 });
   }
 
