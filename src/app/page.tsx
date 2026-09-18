@@ -144,17 +144,18 @@ export default function Home() {
           isSubmitting={isSubmitting}
           error={error}
         />
-      ) : step === "result" ? (
+      ) : step === "result" && checkedBibNumber !== null ? (
         <PrizeResult
+          bibNumber={checkedBibNumber}
           prizeType={prizeType}
           isRedeeming={isRedeeming}
           redeemError={redeemError}
           onRedeem={redeemPrize}
           onCheckAnotherBibNumber={checkAnotherBibNumber}
         />
-      ) : (
-        <RedeemedConfirmation onCheckAnotherBibNumber={checkAnotherBibNumber} />
-      )}
+      ) : checkedBibNumber !== null ? (
+        <RedeemedConfirmation bibNumber={checkedBibNumber} onCheckAnotherBibNumber={checkAnotherBibNumber} />
+      ) : null}
     </main>
   );
 }

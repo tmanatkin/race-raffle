@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 
 type PrizeResultProps = {
+  bibNumber: number;
   prizeType: "prize" | null;
   isRedeeming: boolean;
   redeemError: string;
@@ -11,6 +12,7 @@ type PrizeResultProps = {
 };
 
 export function PrizeResult({
+  bibNumber,
   prizeType,
   isRedeeming,
   redeemError,
@@ -19,6 +21,7 @@ export function PrizeResult({
 }: PrizeResultProps) {
   return (
     <div className="w-full max-w-sm space-y-4">
+      <p className="text-lg">Racer #{bibNumber}</p>
       <p className="text-lg font-semibold">
         {prizeType === "prize" ? "You won! Redeem your prize at the table." : "Sorry! Not this time."}
       </p>
