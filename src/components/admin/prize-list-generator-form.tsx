@@ -65,7 +65,14 @@ export function PrizeListGeneratorForm({
           <Button disabled={isLoading || isSaving || isSavingBib || !hasChanges} type="submit">
             {isSaving ? "Saving list..." : "Generate"}
           </Button>
-          <p className="text-xs text-muted-foreground">Last generated: {formatTimestamp(generatedAt ?? null)}</p>
+          {isLoading ? (
+            <span aria-busy="true" className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
+              Loading last generated time...
+            </span>
+          ) : (
+            <p className="text-xs text-muted-foreground">Last generated: {formatTimestamp(generatedAt ?? null)}</p>
+          )}
         </div>
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
       </section>

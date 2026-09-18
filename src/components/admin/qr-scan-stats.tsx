@@ -18,7 +18,7 @@ export function QrScanStats({ stats, error, isLoading }: QrScanStatsProps) {
       {isLoading ? (
         <div aria-busy="true" className="flex items-center gap-2 text-sm text-muted-foreground">
           <span className="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
-          <span>Loading scan stats...</span>
+          <span>Loading QR stats...</span>
         </div>
       ) : error ? (
         <p className="text-sm text-destructive">{error}</p>

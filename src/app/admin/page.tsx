@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { BibNumberRangeForm } from "@/components/admin/bib-number-range-form";
 import { PrizeListGeneratorForm } from "@/components/admin/prize-list-generator-form";
 import { QrScanStats } from "@/components/admin/qr-scan-stats";
@@ -19,7 +20,26 @@ function shuffle<T>(items: T[]) {
   return shuffled;
 }
 
+const ADMIN_TABS = ["setup", "prize-list", "qr-scans"] as const;
+type AdminTab = (typeof ADMIN_TABS)[number];
+
+function isAdminTab(value: string | null): value is AdminTab {
+  return ADMIN_TABS.includes(value as AdminTab);
+}
+
 export default function AdminPage() {
+  return (
+    <Suspense>
+      <AdminPageContent />
+    </Suspense>
+  );
+}
+
+function AdminPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const activeTab = isAdminTab(tabParam) ? tabParam : "setup";
   const [values, setValues] = useState<GeneratorValues>({
     prizes: 1,
     racers: 1,
@@ -134,6 +154,16 @@ export default function AdminPage() {
       ...currentValues,
       [field]: value === "" ? "" : Number(value),
     }));
+  }
+
+  function changeTab(tab: string) {
+    if (!isAdminTab(tab)) {
+      return;
+    }
+
+    const params = new URLSearchParams(searchParams);
+    params.set("tab", tab);
+    router.replace(`?${params.toString()}`, { scroll: false });
   }
 
   async function generateList(event: FormEvent<HTMLFormElement>) {
@@ -270,7 +300,7 @@ export default function AdminPage() {
           <p className="text-muted-foreground">Generate a predetermined raffle order.</p>
         </div>
 
-        <Tabs defaultValue="setup">
+        <Tabs onValueChange={changeTab} value={activeTab}>
           <TabsList>
             <TabsTrigger value="setup">Race Setup</TabsTrigger>
             <TabsTrigger value="prize-list">Prize List</TabsTrigger>
