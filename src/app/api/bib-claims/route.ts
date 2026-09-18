@@ -13,7 +13,7 @@ export async function GET() {
   const supabase = await createClient();
   const { data: settings, error } = await supabase
     .from("raffle_settings")
-    .select("highest_bib_number")
+    .select("lowest_bib_number, highest_bib_number")
     .eq("id", 1)
     .single();
 
@@ -21,7 +21,10 @@ export async function GET() {
     return NextResponse.json({ error: "Unable to load bib number settings." }, { status: 500 });
   }
 
-  return NextResponse.json({ highestBibNumber: settings.highest_bib_number });
+  return NextResponse.json({
+    lowestBibNumber: settings.lowest_bib_number,
+    highestBibNumber: settings.highest_bib_number,
+  });
 }
 
 export async function POST(request: Request) {

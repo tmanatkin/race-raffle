@@ -21,7 +21,11 @@ export async function GET() {
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    supabase.from("raffle_settings").select("highest_bib_number, updated_at").eq("id", 1).maybeSingle(),
+    supabase
+      .from("raffle_settings")
+      .select("lowest_bib_number, highest_bib_number, updated_at")
+      .eq("id", 1)
+      .maybeSingle(),
   ]);
 
   if (generationError || settingsError) {
@@ -32,6 +36,7 @@ export async function GET() {
     return NextResponse.json({
       generation: null,
       bibSettings: {
+        lowestBibNumber: settings?.lowest_bib_number ?? 0,
         highestBibNumber: settings?.highest_bib_number ?? 0,
         bibLastSavedAt: settings?.updated_at ?? null,
       },
@@ -64,6 +69,7 @@ export async function GET() {
     generation: {
       prizes: generation.prize_count,
       racers: generation.racer_count,
+      lowestBibNumber: settings?.lowest_bib_number ?? 0,
       highestBibNumber: settings?.highest_bib_number ?? 0,
       generatedAt: generation.created_at,
       bibLastSavedAt: settings?.updated_at ?? null,
@@ -145,21 +151,37 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const body = (await request.json()) as { highestBibNumber?: number };
+  const body = (await request.json()) as { lowestBibNumber?: number; highestBibNumber?: number };
+  const lowestBibNumber = body.lowestBibNumber;
   const highestBibNumber = body.highestBibNumber;
 
-  if (typeof highestBibNumber !== "number" || !Number.isInteger(highestBibNumber) || highestBibNumber < 0) {
-    return NextResponse.json({ error: "The highest bib number must be at least 0." }, { status: 400 });
+  if (
+    typeof lowestBibNumber !== "number" ||
+    !Number.isInteger(lowestBibNumber) ||
+    lowestBibNumber < 0 ||
+    typeof highestBibNumber !== "number" ||
+    !Number.isInteger(highestBibNumber) ||
+    highestBibNumber < 0
+  ) {
+    return NextResponse.json({ error: "The bib number range must be whole numbers of at least 0." }, { status: 400 });
+  }
+
+  if (lowestBibNumber > highestBibNumber) {
+    return NextResponse.json({ error: "The lowest bib number cannot be greater than the highest." }, { status: 400 });
   }
 
   const supabase = await createClient();
   const { error: updateError } = await supabase
     .from("raffle_settings")
-    .update({ highest_bib_number: highestBibNumber, updated_at: new Date().toISOString() })
+    .update({
+      lowest_bib_number: lowestBibNumber,
+      highest_bib_number: highestBibNumber,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", 1);
 
   if (updateError) {
-    return NextResponse.json({ error: "Unable to save the highest bib number." }, { status: 500 });
+    return NextResponse.json({ error: "Unable to save the bib number range." }, { status: 500 });
   }
 
   const { data: updatedSettings } = await supabase.from("raffle_settings").select("updated_at").eq("id", 1).single();

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 
 export default function Home() {
   const [bibNumber, setBibNumber] = useState<number | "">("");
+  const [lowestBibNumber, setLowestBibNumber] = useState<number | null>(null);
   const [highestBibNumber, setHighestBibNumber] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -17,12 +18,17 @@ export default function Home() {
     async function loadBibSettings() {
       try {
         const response = await fetch("/api/bib-claims");
-        const result = (await response.json()) as { highestBibNumber?: number; error?: string };
+        const result = (await response.json()) as {
+          lowestBibNumber?: number;
+          highestBibNumber?: number;
+          error?: string;
+        };
 
-        if (!response.ok || result.highestBibNumber === undefined) {
+        if (!response.ok || result.lowestBibNumber === undefined || result.highestBibNumber === undefined) {
           throw new Error(result.error ?? "Unable to load bib number settings.");
         }
 
+        setLowestBibNumber(result.lowestBibNumber);
         setHighestBibNumber(result.highestBibNumber);
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : "Unable to load bib number settings.");
@@ -44,7 +50,12 @@ export default function Home() {
       return;
     }
 
-    if (highestBibNumber === null || bibNumber < 0 || bibNumber > highestBibNumber) {
+    if (
+      lowestBibNumber === null ||
+      highestBibNumber === null ||
+      bibNumber < lowestBibNumber ||
+      bibNumber > highestBibNumber
+    ) {
       setError("Invalid bib number.");
       return;
     }
