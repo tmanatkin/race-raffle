@@ -1,18 +1,22 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { BibNumberForm } from "@/components/bib-number-form";
+import { PrizeResult } from "@/components/prize-result";
+import { RedeemedConfirmation } from "@/components/redeemed-confirmation";
 
 export default function Home() {
   const [bibNumber, setBibNumber] = useState<number | "">("");
   const [lowestBibNumber, setLowestBibNumber] = useState<number | null>(null);
   const [highestBibNumber, setHighestBibNumber] = useState<number | null>(null);
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [claimedBibNumber, setClaimedBibNumber] = useState<number | null>(null);
+  const [prizeType, setPrizeType] = useState<"prize" | null>(null);
+  const [redeemedAt, setRedeemedAt] = useState<string | null>(null);
+  const [redeemError, setRedeemError] = useState("");
+  const [isRedeeming, setIsRedeeming] = useState(false);
 
   useEffect(() => {
     async function loadBibSettings() {
@@ -42,7 +46,6 @@ export default function Home() {
 
   async function claimBibNumber(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage("");
     setError("");
 
     if (bibNumber === "" || !Number.isInteger(bibNumber)) {
@@ -71,17 +74,19 @@ export default function Home() {
       const result = (await response.json()) as {
         error?: string;
         alreadyClaimed?: boolean;
+        bibNumber?: number;
         rafflePosition?: number;
         prizeType?: "prize" | null;
+        redeemedAt?: string | null;
       };
 
       if (!response.ok) {
         throw new Error(result.error ?? "Unable to claim that bib number.");
       }
 
-      const resultLabel = result.prizeType === "prize" ? "Prize" : "No prize";
-
-      setMessage(resultLabel);
+      setClaimedBibNumber(result.bibNumber ?? null);
+      setPrizeType(result.prizeType ?? null);
+      setRedeemedAt(result.redeemedAt ?? null);
       setBibNumber("");
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Unable to claim that bib number.");
@@ -90,29 +95,66 @@ export default function Home() {
     }
   }
 
+  async function redeemPrize() {
+    if (claimedBibNumber === null) {
+      return;
+    }
+
+    setIsRedeeming(true);
+    setRedeemError("");
+
+    try {
+      const response = await fetch("/api/bib-claims/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bibNumber: claimedBibNumber }),
+      });
+      const result = (await response.json()) as { error?: string; redeemedAt?: string | null };
+
+      if (!response.ok) {
+        throw new Error(result.error ?? "Unable to redeem that prize.");
+      }
+
+      setRedeemedAt(result.redeemedAt ?? null);
+    } catch (redeemPrizeError) {
+      setRedeemError(redeemPrizeError instanceof Error ? redeemPrizeError.message : "Unable to redeem that prize.");
+    } finally {
+      setIsRedeeming(false);
+    }
+  }
+
+  function checkAnotherBibNumber() {
+    setError("");
+    setClaimedBibNumber(null);
+    setPrizeType(null);
+    setRedeemedAt(null);
+    setRedeemError("");
+  }
+
+  const step = redeemedAt ? "redeemed" : claimedBibNumber !== null ? "result" : "form";
+
   return (
     <main className="flex min-h-screen items-start justify-center p-8">
-      <form className="w-full max-w-sm space-y-4" onSubmit={claimBibNumber}>
-        <div className="space-y-2">
-          <Label htmlFor="race-bib-number">Enter your bib number</Label>
-          <Input
-            id="race-bib-number"
-            min="0"
-            name="raceBibNumber"
-            onChange={(event) => setBibNumber(event.target.value === "" ? "" : Number(event.target.value))}
-            placeholder={isLoading ? "-" : undefined}
-            step="1"
-            type="number"
-            value={isLoading ? "" : bibNumber}
-            disabled={isLoading || isSubmitting}
-          />
-        </div>
-        <Button disabled={isLoading || isSubmitting} type="submit">
-          {isSubmitting ? "Checking..." : "Submit"}
-        </Button>
-        {message ? <p className="text-sm text-emerald-700">{message}</p> : null}
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
-      </form>
+      {step === "form" ? (
+        <BibNumberForm
+          bibNumber={bibNumber}
+          onBibNumberChange={setBibNumber}
+          onSubmit={claimBibNumber}
+          isLoading={isLoading}
+          isSubmitting={isSubmitting}
+          error={error}
+        />
+      ) : step === "result" ? (
+        <PrizeResult
+          prizeType={prizeType}
+          isRedeeming={isRedeeming}
+          redeemError={redeemError}
+          onRedeem={redeemPrize}
+          onCheckAnotherBibNumber={checkAnotherBibNumber}
+        />
+      ) : (
+        <RedeemedConfirmation onCheckAnotherBibNumber={checkAnotherBibNumber} />
+      )}
     </main>
   );
 }

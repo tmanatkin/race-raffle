@@ -7,6 +7,7 @@ type BibClaimResult = {
   generation_id: string | null;
   raffle_position: number | null;
   prize_type: "prize" | null;
+  redeemed_at: string | null;
 };
 
 export async function GET() {
@@ -63,5 +64,6 @@ export async function POST(request: Request) {
     bibNumber: claim.bib_number,
     rafflePosition: claim.raffle_position,
     prizeType: claim.prize_type,
+    redeemedAt: claim.redeemed_at,
   });
 }

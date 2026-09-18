@@ -11,6 +11,7 @@ type RaffleListEntry = {
   position: number;
   prizeType: PrizeType;
   bibNumber: number | null;
+  redeemedAt: string | null;
 };
 
 type GeneratorValues = {
@@ -153,6 +154,7 @@ export default function AdminPage() {
       position: index + 1,
       prizeType: prize,
       bibNumber: null,
+      redeemedAt: null,
     }));
     setIsSaving(true);
     setListError("");
@@ -380,15 +382,16 @@ export default function AdminPage() {
               <p className="text-sm text-muted-foreground">Prizes will be assigned in this order.</p>
             </div>
             <div className="max-h-96 overflow-y-auto rounded-md border">
-              <div className="sticky top-0 z-10 grid grid-cols-[4rem_5rem_1fr] border-b bg-muted px-4 py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <div className="sticky top-0 z-10 grid grid-cols-[4rem_5rem_1fr_6rem] border-b bg-muted px-4 py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 <span>Position</span>
-                <span>Bib</span>
+                <span>Bib #</span>
                 <span>Result</span>
+                <span>Redeemed</span>
               </div>
               <ol className="divide-y">
                 {generatedList.map((entry) => (
                   <li
-                    className={`grid grid-cols-[4rem_5rem_1fr] items-center px-4 py-3 text-sm ${
+                    className={`grid grid-cols-[4rem_5rem_1fr_6rem] items-center px-4 py-3 text-sm ${
                       entry.prizeType ? "bg-emerald-50/60 dark:bg-emerald-950/20" : "bg-muted/20 text-muted-foreground"
                     }`}
                     key={entry.position}
@@ -400,6 +403,7 @@ export default function AdminPage() {
                     >
                       {entry.prizeType ? "Prize" : "No prize"}
                     </span>
+                    <span>{entry.redeemedAt ? "Yes" : "-"}</span>
                   </li>
                 ))}
               </ol>

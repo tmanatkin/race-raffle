@@ -56,7 +56,7 @@ export async function GET() {
 
   const { data: claims, error: claimsError } = await supabase
     .from("bib_claims")
-    .select("bib_number, raffle_position")
+    .select("bib_number, raffle_position, redeemed_at")
     .eq("generation_id", generation.id);
 
   if (claimsError) {
@@ -64,6 +64,7 @@ export async function GET() {
   }
 
   const bibByPosition = new Map(claims.map((claim) => [claim.raffle_position, claim.bib_number]));
+  const redeemedAtByPosition = new Map(claims.map((claim) => [claim.raffle_position, claim.redeemed_at]));
 
   return NextResponse.json({
     generation: {
@@ -78,6 +79,7 @@ export async function GET() {
       position: entry.position,
       prizeType: entry.prize_type as "prize" | null,
       bibNumber: bibByPosition.get(entry.position) ?? null,
+      redeemedAt: redeemedAtByPosition.get(entry.position) ?? null,
     })),
   });
 }
