@@ -55,7 +55,7 @@ export async function POST(request: Request) {
   }
 
   if (check.status === "list_exhausted") {
-    return NextResponse.json({ error: "The raffle has reached its participant limit." }, { status: 409 });
+    return NextResponse.json({ error: "Raffle has reached participant limit." }, { status: 409 });
   }
 
   return NextResponse.json({
