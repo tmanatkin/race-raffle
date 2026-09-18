@@ -122,7 +122,7 @@ function AdminPageContent() {
 
     async function loadQrScanStats() {
       try {
-        const response = await fetch("/api/admin/qr");
+        const response = await fetch("/api/admin/qr-scans");
         if (!response.ok) {
           throw new Error("Unable to load QR scan stats.");
         }
