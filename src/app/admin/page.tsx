@@ -1,45 +1,12 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { CheckCircle2, XCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-type PrizeType = "prize" | null;
-
-type RaffleListEntry = {
-  position: number;
-  prizeType: PrizeType;
-  bibNumber: number | null;
-  redeemedAt: string | null;
-};
-
-type GeneratorValues = {
-  prizes: number | "";
-  racers: number | "";
-  lowestBibNumber: number | "";
-  highestBibNumber: number | "";
-};
-
-type GenerationTimestamps = {
-  generatedAt: string;
-  bibLastSavedAt: string | null;
-};
-
-function formatTimestamp(timestamp: string | null) {
-  if (!timestamp) {
-    return "Never";
-  }
-
-  return (
-    new Intl.DateTimeFormat("en-US", {
-      dateStyle: "medium",
-      timeStyle: "short",
-      timeZone: "America/Denver",
-    }).format(new Date(timestamp)) + " (MST)"
-  );
-}
+import { BibNumberRangeForm } from "@/components/admin/bib-number-range-form";
+import { PrizeListGeneratorForm } from "@/components/admin/prize-list-generator-form";
+import { QrScanStats } from "@/components/admin/qr-scan-stats";
+import { RacerPrizeList } from "@/components/admin/racer-prize-list";
+import { GeneratorValues, GenerationTimestamps, RaffleListEntry } from "@/components/admin/types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function shuffle<T>(items: T[]) {
   const shuffled = [...items];
@@ -147,9 +114,9 @@ export default function AdminPage() {
     }
 
     const prizeSlots = Math.min(numericValues.prizes, numericValues.racers);
-    const prizes: PrizeType[] = [
-      ...Array<PrizeType>(prizeSlots).fill("prize"),
-      ...Array<PrizeType>(numericValues.racers - prizeSlots).fill(null),
+    const prizes = [
+      ...Array<"prize" | null>(prizeSlots).fill("prize"),
+      ...Array<"prize" | null>(numericValues.racers - prizeSlots).fill(null),
     ];
 
     const shuffledPrizes = shuffle(prizes);
@@ -268,177 +235,50 @@ export default function AdminPage() {
           <p className="text-muted-foreground">Generate a predetermined raffle order.</p>
         </div>
 
-        <form className="space-y-4" onSubmit={saveBibNumberRange}>
-          <section className="space-y-4">
-            <div className="space-y-1">
-              <h2 className="text-lg font-semibold">Bib Number Range</h2>
-              <p className="text-sm text-muted-foreground">Set the range of bib numbers used in the race.</p>
-            </div>
-            {hasBibNumberChanges && !isLoading ? (
-              <p className="text-xs font-medium text-amber-700">Unsaved changes</p>
-            ) : null}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="lowest-bib-number">Lowest</Label>
-                <Input
-                  id="lowest-bib-number"
-                  disabled={isLoading || isSaving || isSavingBib}
-                  min="0"
-                  onChange={(event) => updateValue("lowestBibNumber", event.target.value)}
-                  placeholder={isLoading ? "-" : undefined}
-                  step="1"
-                  type="number"
-                  value={isLoading ? "" : values.lowestBibNumber}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="highest-bib-number">Highest</Label>
-                <Input
-                  id="highest-bib-number"
-                  disabled={isLoading || isSaving || isSavingBib}
-                  min="0"
-                  onChange={(event) => updateValue("highestBibNumber", event.target.value)}
-                  placeholder={isLoading ? "-" : undefined}
-                  step="1"
-                  type="number"
-                  value={isLoading ? "" : values.highestBibNumber}
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button disabled={isLoading || isSaving || isSavingBib || !hasBibNumberChanges} type="submit">
-                {isSavingBib ? "Saving..." : "Save"}
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                Last saved: {formatTimestamp(timestamps?.bibLastSavedAt ?? null)}
-              </p>
-            </div>
-            {bibError ? <p className="text-sm text-destructive">{bibError}</p> : null}
-          </section>
-        </form>
+        <Tabs defaultValue="setup">
+          <TabsList>
+            <TabsTrigger value="setup">Race Setup</TabsTrigger>
+            <TabsTrigger value="prize-list">Prize List</TabsTrigger>
+            <TabsTrigger value="qr-scans">QR Scans</TabsTrigger>
+          </TabsList>
 
-        <form className="space-y-6" onSubmit={generateList}>
-          <section className="space-y-4">
-            <div className="space-y-1">
-              <h2 className="text-lg font-semibold">Prize List Generator</h2>
-              <p className="text-sm text-muted-foreground">Set the parameters used to generate the prize list.</p>
-            </div>
-            {hasPrizeListChanges && !isLoading ? (
-              <p className="text-xs font-medium text-amber-700">Unsaved changes</p>
-            ) : null}
-            <div className="space-y-2">
-              <Label htmlFor="prizes">Total number of prizes</Label>
-              <Input
-                id="prizes"
-                disabled={isLoading || isSaving}
-                min="0"
-                onChange={(event) => updateValue("prizes", event.target.value)}
-                placeholder={isLoading ? "-" : undefined}
-                step="1"
-                type="number"
-                value={isLoading ? "" : values.prizes}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="racers">Total number of people racing</Label>
-              <Input
-                id="racers"
-                disabled={isLoading || isSaving}
-                min="0"
-                onChange={(event) => updateValue("racers", event.target.value)}
-                placeholder={isLoading ? "-" : undefined}
-                step="1"
-                type="number"
-                value={isLoading ? "" : values.racers}
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <Button disabled={isLoading || isSaving || isSavingBib || !hasPrizeListChanges} type="submit">
-                {isSaving ? "Saving list..." : "Generate"}
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                Last generated: {formatTimestamp(timestamps?.generatedAt ?? null)}
-              </p>
-            </div>
-            {listError ? <p className="text-sm text-destructive">{listError}</p> : null}
-          </section>
-        </form>
+          <TabsContent className="space-y-8" value="setup">
+            <BibNumberRangeForm
+              bibLastSavedAt={timestamps?.bibLastSavedAt ?? null}
+              error={bibError}
+              hasChanges={hasBibNumberChanges}
+              isLoading={isLoading}
+              isSaving={isSaving}
+              isSavingBib={isSavingBib}
+              onChange={updateValue}
+              onSubmit={saveBibNumberRange}
+              values={values}
+            />
+            <PrizeListGeneratorForm
+              error={listError}
+              generatedAt={timestamps?.generatedAt}
+              hasChanges={hasPrizeListChanges}
+              isLoading={isLoading}
+              isSaving={isSaving}
+              isSavingBib={isSavingBib}
+              onChange={updateValue}
+              onSubmit={generateList}
+              values={values}
+            />
+          </TabsContent>
 
-        {isLoading ? (
-          <section
-            aria-busy="true"
-            aria-label="Loading generated raffle order"
-            className="flex items-center gap-2 text-sm text-muted-foreground"
-          >
-            <span className="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
-            <span>Loading generated order...</span>
-          </section>
-        ) : hasGeneratedGeneration && generatedList.length === 0 ? (
-          <section aria-label="Prize list" className="space-y-3">
-            <h2 className="text-lg font-semibold">Racer Prize List</h2>
-            <p className="text-sm text-muted-foreground">No racers.</p>
-          </section>
-        ) : generatedList.length > 0 ? (
-          <section aria-label="Prize list" className="space-y-3">
-            <div className="space-y-1">
-              <h2 className="text-lg font-semibold">Racer Prize List</h2>
-              <p className="text-sm text-muted-foreground">Prizes will be assigned in this order.</p>
-            </div>
-            <div className="max-h-96 overflow-y-auto rounded-md border">
-              <table className="w-full table-fixed text-sm">
-                <thead className="sticky top-0 z-10 bg-muted text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  <tr>
-                    <th className="w-1/4 px-4 py-2 text-left" scope="col">
-                      Position
-                    </th>
-                    <th className="w-1/4 px-4 py-2 text-left" scope="col">
-                      Result
-                    </th>
-                    <th className="w-1/4 px-4 py-2 text-left" scope="col">
-                      Bib #
-                    </th>
-                    <th className="w-1/4 px-4 py-2 text-left" scope="col">
-                      Redeemed
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {generatedList.map((entry) => (
-                    <tr
-                      className={
-                        entry.prizeType
-                          ? "bg-emerald-50/60 dark:bg-emerald-950/20"
-                          : "bg-muted/20 text-muted-foreground"
-                      }
-                      key={entry.position}
-                    >
-                      <td className="px-4 py-3">{entry.position}</td>
-                      <td
-                        className={
-                          entry.prizeType ? "px-4 py-3 font-medium text-emerald-800 dark:text-emerald-300" : "px-4 py-3"
-                        }
-                      >
-                        {entry.prizeType ? "Prize" : "No prize"}
-                      </td>
-                      <td className="px-4 py-3 text-left">{entry.bibNumber ?? "-"}</td>
-                      <td className="px-4 py-3">
-                        <div>
-                          {entry.bibNumber === null || !entry.prizeType ? (
-                            "-"
-                          ) : entry.redeemedAt ? (
-                            <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
-                          ) : (
-                            <XCircle className="size-4 text-muted-foreground" />
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        ) : null}
+          <TabsContent value="prize-list">
+            <RacerPrizeList
+              generatedList={generatedList}
+              hasGeneratedGeneration={hasGeneratedGeneration}
+              isLoading={isLoading}
+            />
+          </TabsContent>
+
+          <TabsContent value="qr-scans">
+            <QrScanStats />
+          </TabsContent>
+        </Tabs>
       </div>
     </main>
   );
