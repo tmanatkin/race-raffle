@@ -20,7 +20,7 @@ function shuffle<T>(items: T[]) {
   return shuffled;
 }
 
-const ADMIN_TABS = ["setup", "prize-list", "qr-scans"] as const;
+const ADMIN_TABS = ["setup", "list", "qr"] as const;
 type AdminTab = (typeof ADMIN_TABS)[number];
 
 function isAdminTab(value: string | null): value is AdminTab {
@@ -122,7 +122,7 @@ function AdminPageContent() {
 
     async function loadQrScanStats() {
       try {
-        const response = await fetch("/api/admin/qr-scans");
+        const response = await fetch("/api/admin/qr");
         if (!response.ok) {
           throw new Error("Unable to load QR scan stats.");
         }
@@ -303,8 +303,8 @@ function AdminPageContent() {
         <Tabs onValueChange={changeTab} value={activeTab}>
           <TabsList>
             <TabsTrigger value="setup">Race Setup</TabsTrigger>
-            <TabsTrigger value="prize-list">Prize List</TabsTrigger>
-            <TabsTrigger value="qr-scans">QR Scans</TabsTrigger>
+            <TabsTrigger value="list">Prize List</TabsTrigger>
+            <TabsTrigger value="qr">QR Scans</TabsTrigger>
           </TabsList>
 
           <TabsContent className="space-y-8" value="setup">
@@ -332,7 +332,7 @@ function AdminPageContent() {
             />
           </TabsContent>
 
-          <TabsContent value="prize-list">
+          <TabsContent value="list">
             <RacerPrizeList
               generatedList={generatedList}
               hasGeneratedGeneration={hasGeneratedGeneration}
@@ -340,7 +340,7 @@ function AdminPageContent() {
             />
           </TabsContent>
 
-          <TabsContent value="qr-scans">
+          <TabsContent value="qr">
             <QrScanStats error={qrScanStatsError} isLoading={isLoadingQrScanStats} stats={qrScanStats} />
           </TabsContent>
         </Tabs>
