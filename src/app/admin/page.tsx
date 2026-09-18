@@ -35,8 +35,8 @@ function formatTimestamp(timestamp: string | null) {
   return new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
-    timeZone: "UTC",
-  }).format(new Date(timestamp));
+    timeZone: "America/Denver",
+  }).format(new Date(timestamp)) + " (MST)";
 }
 
 function shuffle<T>(items: T[]) {
