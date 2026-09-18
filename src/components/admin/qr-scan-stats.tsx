@@ -1,50 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { formatTimestamp } from "@/components/admin/types";
+import { formatTimestamp, QrScanStatsData } from "@/components/admin/types";
 
-type QrScanStatsData = {
-  totalScans: number;
-  latestScanAt: string | null;
+type QrScanStatsProps = {
+  stats: QrScanStatsData | null;
+  error: string;
+  isLoading: boolean;
 };
 
-export function QrScanStats() {
-  const [stats, setStats] = useState<QrScanStatsData | null>(null);
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    let isCurrent = true;
-
-    async function loadStats() {
-      try {
-        const response = await fetch("/api/admin/qr-scans");
-        if (!response.ok) {
-          throw new Error("Unable to load QR scan stats.");
-        }
-
-        const result = (await response.json()) as QrScanStatsData;
-        if (isCurrent) {
-          setStats(result);
-        }
-      } catch (loadError) {
-        if (isCurrent) {
-          setError(loadError instanceof Error ? loadError.message : "Unable to load QR scan stats.");
-        }
-      } finally {
-        if (isCurrent) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadStats();
-
-    return () => {
-      isCurrent = false;
-    };
-  }, []);
-
+export function QrScanStats({ stats, error, isLoading }: QrScanStatsProps) {
   return (
     <section aria-label="QR scan stats" className="space-y-4">
       <div className="space-y-1">

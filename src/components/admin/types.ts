@@ -19,6 +19,11 @@ export type GenerationTimestamps = {
   bibLastSavedAt: string | null;
 };
 
+export type QrScanStatsData = {
+  totalScans: number;
+  latestScanAt: string | null;
+};
+
 export function formatTimestamp(timestamp: string | null) {
   if (!timestamp) {
     return "Never";

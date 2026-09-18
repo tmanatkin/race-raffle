@@ -5,7 +5,7 @@ import { BibNumberRangeForm } from "@/components/admin/bib-number-range-form";
 import { PrizeListGeneratorForm } from "@/components/admin/prize-list-generator-form";
 import { QrScanStats } from "@/components/admin/qr-scan-stats";
 import { RacerPrizeList } from "@/components/admin/racer-prize-list";
-import { GeneratorValues, GenerationTimestamps, RaffleListEntry } from "@/components/admin/types";
+import { GeneratorValues, GenerationTimestamps, QrScanStatsData, RaffleListEntry } from "@/components/admin/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function shuffle<T>(items: T[]) {
@@ -35,6 +35,9 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingBib, setIsSavingBib] = useState(false);
+  const [qrScanStats, setQrScanStats] = useState<QrScanStatsData | null>(null);
+  const [qrScanStatsError, setQrScanStatsError] = useState("");
+  const [isLoadingQrScanStats, setIsLoadingQrScanStats] = useState(true);
 
   useEffect(() => {
     let isCurrent = true;
@@ -88,6 +91,38 @@ export default function AdminPage() {
     }
 
     void loadSavedGeneration();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadQrScanStats() {
+      try {
+        const response = await fetch("/api/admin/qr-scans");
+        if (!response.ok) {
+          throw new Error("Unable to load QR scan stats.");
+        }
+
+        const result = (await response.json()) as QrScanStatsData;
+        if (isCurrent) {
+          setQrScanStats(result);
+        }
+      } catch (loadError) {
+        if (isCurrent) {
+          setQrScanStatsError(loadError instanceof Error ? loadError.message : "Unable to load QR scan stats.");
+        }
+      } finally {
+        if (isCurrent) {
+          setIsLoadingQrScanStats(false);
+        }
+      }
+    }
+
+    void loadQrScanStats();
 
     return () => {
       isCurrent = false;
@@ -276,7 +311,7 @@ export default function AdminPage() {
           </TabsContent>
 
           <TabsContent value="qr-scans">
-            <QrScanStats />
+            <QrScanStats error={qrScanStatsError} isLoading={isLoadingQrScanStats} stats={qrScanStats} />
           </TabsContent>
         </Tabs>
       </div>
