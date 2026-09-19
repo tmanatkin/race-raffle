@@ -15,8 +15,6 @@ export default function Home() {
   const [checkedBibNumber, setCheckedBibNumber] = useState<number | null>(null);
   const [prizeType, setPrizeType] = useState<"prize" | null>(null);
   const [redeemedAt, setRedeemedAt] = useState<string | null>(null);
-  const [redeemError, setRedeemError] = useState("");
-  const [isRedeeming, setIsRedeeming] = useState(false);
 
   useEffect(() => {
     async function loadBibSettings() {
@@ -95,40 +93,11 @@ export default function Home() {
     }
   }
 
-  async function redeemPrize() {
-    if (checkedBibNumber === null) {
-      return;
-    }
-
-    setIsRedeeming(true);
-    setRedeemError("");
-
-    try {
-      const response = await fetch("/api/bib-checks/redeem", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bibNumber: checkedBibNumber }),
-      });
-      const result = (await response.json()) as { error?: string; redeemedAt?: string | null };
-
-      if (!response.ok) {
-        throw new Error(result.error ?? "Unable to redeem prize.");
-      }
-
-      setRedeemedAt(result.redeemedAt ?? null);
-    } catch (redeemPrizeError) {
-      setRedeemError(redeemPrizeError instanceof Error ? redeemPrizeError.message : "Unable to redeem prize.");
-    } finally {
-      setIsRedeeming(false);
-    }
-  }
-
   function checkAnotherBibNumber() {
     setError("");
     setCheckedBibNumber(null);
     setPrizeType(null);
     setRedeemedAt(null);
-    setRedeemError("");
   }
 
   const step = redeemedAt ? "redeemed" : checkedBibNumber !== null ? "result" : "form";
@@ -148,9 +117,6 @@ export default function Home() {
         <PrizeResult
           bibNumber={checkedBibNumber}
           prizeType={prizeType}
-          isRedeeming={isRedeeming}
-          redeemError={redeemError}
-          onRedeem={redeemPrize}
           onCheckAnotherBibNumber={checkAnotherBibNumber}
         />
       ) : checkedBibNumber !== null ? (

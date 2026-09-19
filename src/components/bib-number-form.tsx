@@ -12,6 +12,9 @@ type BibNumberFormProps = {
   isLoading: boolean;
   isSubmitting: boolean;
   error: string;
+  label?: string;
+  submitLabel?: string;
+  submittingLabel?: string;
 };
 
 export function BibNumberForm({
@@ -21,11 +24,14 @@ export function BibNumberForm({
   isLoading,
   isSubmitting,
   error,
+  label = "Enter your bib number",
+  submitLabel = "Submit",
+  submittingLabel = "Checking...",
 }: BibNumberFormProps) {
   return (
     <form className="w-full max-w-sm space-y-4" onSubmit={onSubmit}>
       <div className="space-y-2">
-        <Label htmlFor="race-bib-number">Enter your bib number</Label>
+        <Label htmlFor="race-bib-number">{label}</Label>
         <Input
           id="race-bib-number"
           min="0"
@@ -39,7 +45,7 @@ export function BibNumberForm({
         />
       </div>
       <Button disabled={isLoading || isSubmitting} type="submit">
-        {isSubmitting ? "Checking..." : "Submit"}
+        {isSubmitting ? submittingLabel : submitLabel}
       </Button>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
     </form>
