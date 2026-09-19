@@ -18,7 +18,7 @@ type RacerStatusListGeneratorFormProps = {
   values: Pick<GeneratorValues, "prizes" | "racers">;
   hasChanges: boolean;
   isLoading: boolean;
-  isSaving: boolean;
+  isGeneratingList: boolean;
   isSavingBib: boolean;
   generatedAt: string | null | undefined;
   error: string;
@@ -30,7 +30,7 @@ export function RacerStatusListGeneratorForm({
   values,
   hasChanges,
   isLoading,
-  isSaving,
+  isGeneratingList,
   isSavingBib,
   generatedAt,
   error,
@@ -39,7 +39,6 @@ export function RacerStatusListGeneratorForm({
 }: RacerStatusListGeneratorFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const hasExistingList = Boolean(generatedAt);
 
   return (
     <form ref={formRef} className="space-y-6" onSubmit={onSubmit}>
@@ -53,7 +52,7 @@ export function RacerStatusListGeneratorForm({
           <Label htmlFor="prizes">Total number of prizes</Label>
           <Input
             id="prizes"
-            disabled={isLoading || isSaving}
+            disabled={isLoading || isGeneratingList}
             min="0"
             onChange={(event) => onChange("prizes", event.target.value)}
             placeholder={isLoading ? "-" : undefined}
@@ -66,7 +65,7 @@ export function RacerStatusListGeneratorForm({
           <Label htmlFor="racers">Total number of people racing</Label>
           <Input
             id="racers"
-            disabled={isLoading || isSaving}
+            disabled={isLoading || isGeneratingList}
             min="0"
             onChange={(event) => onChange("racers", event.target.value)}
             placeholder={isLoading ? "-" : undefined}
@@ -78,11 +77,11 @@ export function RacerStatusListGeneratorForm({
         <div className="flex items-center gap-3">
           <AlertDialog onOpenChange={setIsConfirmOpen} open={isConfirmOpen}>
             <Button
-              disabled={isLoading || isSaving || isSavingBib || !hasChanges}
+              disabled={isLoading || isGeneratingList || isSavingBib || !hasChanges}
               onClick={() => setIsConfirmOpen(true)}
               type="button"
             >
-              {isSaving ? "Saving list..." : "Generate"}
+              {isGeneratingList ? "Generating..." : "Generate"}
             </Button>
             <AlertDialogContent>
               <AlertDialogHeader>

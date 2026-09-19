@@ -193,6 +193,7 @@ function AdminPageContent() {
     }));
     setIsSaving(true);
     setListError("");
+    changeTab("list");
 
     try {
       const response = await fetch("/api/admin/raffle-entries", {
@@ -321,7 +322,7 @@ function AdminPageContent() {
               generatedAt={timestamps?.generatedAt}
               hasChanges={hasRacerStatusListChanges}
               isLoading={isLoading}
-              isSaving={isSaving}
+              isGeneratingList={isSaving}
               isSavingBib={isSavingBib}
               onChange={updateValue}
               onSubmit={generateList}
@@ -333,7 +334,7 @@ function AdminPageContent() {
             <RacerStatusList
               generatedList={generatedList}
               hasGeneratedGeneration={hasGeneratedGeneration}
-              isLoading={isLoading}
+              isLoading={isLoading || isSaving}
             />
           </TabsContent>
 

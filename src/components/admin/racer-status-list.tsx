@@ -45,7 +45,7 @@ export function RacerStatusList({ isLoading, hasGeneratedGeneration, generatedLi
           className="flex items-center gap-2 text-sm text-muted-foreground"
         >
           <span className="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
-          <span>Loading generated order...</span>
+          <span>Loading list...</span>
         </div>
       ) : hasGeneratedGeneration && generatedList.length === 0 ? (
         <p className="text-sm text-muted-foreground">No racers.</p>
