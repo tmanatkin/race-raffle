@@ -120,7 +120,11 @@ export default function Home() {
           onCheckAnotherBibNumber={checkAnotherBibNumber}
         />
       ) : checkedBibNumber !== null ? (
-        <RedeemedConfirmation bibNumber={checkedBibNumber} onCheckAnotherBibNumber={checkAnotherBibNumber} />
+        <RedeemedConfirmation
+          bibNumber={checkedBibNumber}
+          onCheckAnotherBibNumber={checkAnotherBibNumber}
+          title="Prize has already been redeemed."
+        />
       ) : null}
     </main>
   );
