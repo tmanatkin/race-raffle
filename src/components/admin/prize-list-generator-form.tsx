@@ -1,4 +1,14 @@
-import { FormEvent } from "react";
+import { FormEvent, useRef, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,8 +37,12 @@ export function PrizeListGeneratorForm({
   onChange,
   onSubmit,
 }: PrizeListGeneratorFormProps) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const hasExistingList = Boolean(generatedAt);
+
   return (
-    <form className="space-y-6" onSubmit={onSubmit}>
+    <form ref={formRef} className="space-y-6" onSubmit={onSubmit}>
       <section className="space-y-4">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold">Prize List Generator</h2>
@@ -62,9 +76,34 @@ export function PrizeListGeneratorForm({
           />
         </div>
         <div className="flex items-center gap-3">
-          <Button disabled={isLoading || isSaving || isSavingBib || !hasChanges} type="submit">
-            {isSaving ? "Saving list..." : "Generate"}
-          </Button>
+          <AlertDialog onOpenChange={setIsConfirmOpen} open={isConfirmOpen}>
+            <Button
+              disabled={isLoading || isSaving || isSavingBib || !hasChanges}
+              onClick={() => setIsConfirmOpen(true)}
+              type="button"
+            >
+              {isSaving ? "Saving list..." : "Generate"}
+            </Button>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will replace any existing prize list. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    setIsConfirmOpen(false);
+                    formRef.current?.requestSubmit();
+                  }}
+                >
+                  Generate
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           {isLoading ? (
             <span aria-busy="true" className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
