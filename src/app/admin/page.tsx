@@ -294,13 +294,10 @@ function AdminPageContent() {
 
   return (
     <main className="min-h-screen p-8">
-      <div className="mx-auto w-full max-w-2xl space-y-8">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">Admin</h1>
-          <p className="text-muted-foreground">Generate a predetermined raffle order.</p>
-        </div>
+      <div className="mx-auto w-full max-w-2xl space-y-2">
+        <h1 className="text-2xl font-semibold tracking-tight">Admin</h1>
 
-        <Tabs onValueChange={changeTab} value={activeTab}>
+        <Tabs className="space-y-8" onValueChange={changeTab} value={activeTab}>
           <TabsList>
             <TabsTrigger value="setup">Race Setup</TabsTrigger>
             <TabsTrigger value="list">Prize List</TabsTrigger>
