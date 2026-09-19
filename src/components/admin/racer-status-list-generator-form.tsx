@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GeneratorValues, formatTimestamp } from "@/components/admin/types";
 
-type PrizeListGeneratorFormProps = {
+type RacerStatusListGeneratorFormProps = {
   values: Pick<GeneratorValues, "prizes" | "racers">;
   hasChanges: boolean;
   isLoading: boolean;
@@ -26,7 +26,7 @@ type PrizeListGeneratorFormProps = {
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
 
-export function PrizeListGeneratorForm({
+export function RacerStatusListGeneratorForm({
   values,
   hasChanges,
   isLoading,
@@ -36,7 +36,7 @@ export function PrizeListGeneratorForm({
   error,
   onChange,
   onSubmit,
-}: PrizeListGeneratorFormProps) {
+}: RacerStatusListGeneratorFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const hasExistingList = Boolean(generatedAt);
@@ -45,8 +45,8 @@ export function PrizeListGeneratorForm({
     <form ref={formRef} className="space-y-6" onSubmit={onSubmit}>
       <section className="space-y-4">
         <div className="space-y-1">
-          <h2 className="text-lg font-semibold">Prize List Generator</h2>
-          <p className="text-sm text-muted-foreground">Set the parameters used to generate the prize list.</p>
+          <h2 className="text-lg font-semibold">Racer Status List Generator</h2>
+          <p className="text-sm text-muted-foreground">Set the parameters used to generate the racer status list.</p>
         </div>
         {hasChanges && !isLoading ? <p className="text-xs font-medium text-amber-700">Unsaved changes</p> : null}
         <div className="space-y-2">
@@ -88,7 +88,7 @@ export function PrizeListGeneratorForm({
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will replace any existing prize list. This action cannot be undone.
+                  This will replace any existing racer status list. This action cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
