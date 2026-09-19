@@ -7,19 +7,23 @@ type RacerStatusListProps = {
   generatedList: RaffleListEntry[];
 };
 
-function StatusIcon({ achieved }: { achieved: boolean }) {
-  return achieved ? (
-    <span className="inline-flex size-5 items-center justify-center rounded-full bg-emerald-600 text-white dark:bg-emerald-500">
-      <Check className="size-3.5" strokeWidth={3} />
-    </span>
-  ) : (
-    <span className="inline-flex size-5 items-center justify-center rounded-full bg-red-600 text-white dark:bg-red-500">
-      <X className="size-3.5" strokeWidth={3} />
-    </span>
-  );
-}
+function StatusIcon({ status }: { status: "check" | "x" | "minus" }) {
+  if (status === "check") {
+    return (
+      <span className="inline-flex size-5 items-center justify-center rounded-full bg-emerald-600 text-white dark:bg-emerald-500">
+        <Check className="size-3.5" strokeWidth={3} />
+      </span>
+    );
+  }
 
-function NotApplicableIcon() {
+  if (status === "x") {
+    return (
+      <span className="inline-flex size-5 items-center justify-center rounded-full bg-red-600 text-white dark:bg-red-500">
+        <X className="size-3.5" strokeWidth={3} />
+      </span>
+    );
+  }
+
   return (
     <span className="inline-flex size-5 items-center justify-center rounded-full bg-muted-foreground/30 text-white">
       <Minus className="size-3.5" strokeWidth={3} />
@@ -68,13 +72,13 @@ export function RacerStatusList({ isLoading, hasGeneratedGeneration, generatedLi
                 <tr className={index % 2 === 0 ? "bg-background" : "bg-muted/40"} key={entry.position}>
                   <td className="px-4 py-3 text-left">{entry.bibNumber ?? "-"}</td>
                   <td className="px-4 py-3">
-                    <StatusIcon achieved={Boolean(entry.prizeType)} />
+                    <StatusIcon status={entry.prizeType ? "check" : "minus"} />
                   </td>
                   <td className="px-4 py-3">
                     {entry.bibNumber === null || !entry.prizeType ? (
-                      <NotApplicableIcon />
+                      <StatusIcon status="minus" />
                     ) : (
-                      <StatusIcon achieved={Boolean(entry.redeemedAt)} />
+                      <StatusIcon status={entry.redeemedAt ? "check" : "x"} />
                     )}
                   </td>
                 </tr>
