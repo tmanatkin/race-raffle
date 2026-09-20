@@ -9,15 +9,21 @@ import { RacerStatusList } from "@/components/admin/racer-status-list";
 import { GeneratorValues, GenerationTimestamps, QrScanStatsData, RaffleListEntry } from "@/components/admin/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-function shuffle<T>(items: T[]) {
-  const shuffled = [...items];
+function distributeEvenly(prizeCount: number, totalSlots: number) {
+  const distributed: ("prize" | null)[] = new Array(totalSlots).fill(null);
 
-  for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1));
-    [shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]];
+  if (prizeCount === 0) {
+    return distributed;
   }
 
-  return shuffled;
+  for (let k = 0; k < prizeCount; k += 1) {
+    // Midpoint of the k-th equal segment, so a single prize centers
+    // in the array instead of landing at the edge.
+    const position = Math.min(Math.floor((k + 0.5) * (totalSlots / prizeCount)), totalSlots - 1);
+    distributed[position] = "prize";
+  }
+
+  return distributed;
 }
 
 const ADMIN_TABS = ["setup", "list", "qr"] as const;
@@ -179,12 +185,7 @@ function AdminPageContent() {
     }
 
     const prizeSlots = Math.min(numericValues.prizes, numericValues.racers);
-    const prizes = [
-      ...Array<"prize" | null>(prizeSlots).fill("prize"),
-      ...Array<"prize" | null>(numericValues.racers - prizeSlots).fill(null),
-    ];
-
-    const shuffledPrizes = shuffle(prizes);
+    const shuffledPrizes = distributeEvenly(prizeSlots, numericValues.racers);
     const generatedEntries = shuffledPrizes.map((prize, index) => ({
       position: index + 1,
       prizeType: prize,
