@@ -10,16 +10,20 @@ import { GeneratorValues, GenerationTimestamps, QrScanStatsData, RaffleListEntry
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function distributeEvenly(prizeCount: number, totalSlots: number) {
-  const distributed: ("prize" | null)[] = new Array(totalSlots).fill(null);
+  let distributed: ("prize" | null)[] = new Array(totalSlots).fill(null);
 
   if (prizeCount === 0) {
     return distributed;
   }
 
-  for (let k = 0; k < prizeCount; k += 1) {
-    // Midpoint of the k-th equal segment, so a single prize centers
-    // in the array instead of landing at the edge.
-    const position = Math.min(Math.floor((k + 0.5) * (totalSlots / prizeCount)), totalSlots - 1);
+  if (prizeCount >= totalSlots) {
+    distributed = distributed.fill("prize");
+    return distributed;
+  }
+
+  for (let k = 1; k <= prizeCount; k += 1) {
+    // Evenly spaced placement so prizes spread across the array instead of clustering.
+    const position = Math.round(k * ((totalSlots + 1) / (prizeCount + 1))) - 1;
     distributed[position] = "prize";
   }
 
