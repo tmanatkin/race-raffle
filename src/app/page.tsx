@@ -116,12 +116,14 @@ export default function Home() {
       ) : step === "result" && checkedBibNumber !== null ? (
         <PrizeResult
           bibNumber={checkedBibNumber}
+          highestBibNumber={highestBibNumber ?? checkedBibNumber}
           prizeType={prizeType}
           onCheckAnotherBibNumber={checkAnotherBibNumber}
         />
       ) : checkedBibNumber !== null ? (
         <RedeemedConfirmation
           bibNumber={checkedBibNumber}
+          highestBibNumber={highestBibNumber ?? checkedBibNumber}
           onCheckAnotherBibNumber={checkAnotherBibNumber}
           title="Prize has already been redeemed."
         />

@@ -383,7 +383,9 @@ function AdminPageContent() {
             <RacerStatusList
               generatedList={generatedList}
               hasGeneratedGeneration={hasGeneratedGeneration}
+              highestBibNumber={typeof savedValues?.highestBibNumber === "number" ? savedValues.highestBibNumber : 0}
               isLoading={isLoading || isSaving}
+              totalPrizes={typeof savedValues?.prizes === "number" ? savedValues.prizes : 0}
             />
           </TabsContent>
 

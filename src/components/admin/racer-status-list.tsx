@@ -1,10 +1,13 @@
 import { Check, Minus, X } from "lucide-react";
 import { RaffleListEntry } from "@/components/admin/types";
+import { formatPaddedNumber } from "@/lib/utils";
 
 type RacerStatusListProps = {
   isLoading: boolean;
   hasGeneratedGeneration: boolean;
   generatedList: RaffleListEntry[];
+  highestBibNumber: number;
+  totalPrizes: number;
 };
 
 function StatusIcon({ status }: { status: "check" | "x" | "minus" }) {
@@ -31,7 +34,13 @@ function StatusIcon({ status }: { status: "check" | "x" | "minus" }) {
   );
 }
 
-export function RacerStatusList({ isLoading, hasGeneratedGeneration, generatedList }: RacerStatusListProps) {
+export function RacerStatusList({
+  isLoading,
+  hasGeneratedGeneration,
+  generatedList,
+  highestBibNumber,
+  totalPrizes,
+}: RacerStatusListProps) {
   return (
     <section aria-label="Racer status list" className="space-y-3">
       <div className="space-y-1">
@@ -73,11 +82,15 @@ export function RacerStatusList({ isLoading, hasGeneratedGeneration, generatedLi
             <tbody className="divide-y">
               {generatedList.map((entry, index) => (
                 <tr className={index % 2 === 0 ? "bg-background" : "bg-muted/40"} key={entry.position}>
-                  <td className="px-4 py-3 text-left">{entry.bibNumber ?? "-"}</td>
+                  <td className="px-4 py-3 text-left font-mono">
+                    {entry.bibNumber === null ? "-" : formatPaddedNumber(entry.bibNumber, highestBibNumber)}
+                  </td>
                   <td className="px-4 py-3">
                     <StatusIcon status={entry.prizeType ? "check" : "minus"} />
                   </td>
-                  <td className="px-4 py-3 text-left">{entry.prizeNumber ?? "-"}</td>
+                  <td className="px-4 py-3 text-left font-mono">
+                    {entry.prizeNumber === null ? "-" : formatPaddedNumber(entry.prizeNumber, totalPrizes)}
+                  </td>
                   <td className="px-4 py-3">
                     {entry.bibNumber === null || !entry.prizeType ? (
                       <StatusIcon status="minus" />
