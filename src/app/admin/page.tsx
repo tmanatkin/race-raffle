@@ -9,7 +9,7 @@ import { RacerStatusList } from "@/components/admin/racer-status-list";
 import { GeneratorValues, GenerationTimestamps, QrScanStatsData, RaffleListEntry } from "@/components/admin/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-function distributeEvenly(prizeCount: number, totalSlots: number) {
+function distributePrizesEvenly(prizeCount: number, totalSlots: number) {
   let distributed: ("prize" | null)[] = new Array(totalSlots).fill(null);
 
   if (prizeCount === 0) {
@@ -21,13 +21,27 @@ function distributeEvenly(prizeCount: number, totalSlots: number) {
     return distributed;
   }
 
-  for (let k = 1; k <= prizeCount; k += 1) {
-    // Evenly spaced placement so prizes spread across the array instead of clustering.
-    const position = Math.round(k * ((totalSlots + 1) / (prizeCount + 1))) - 1;
+  for (let i = 1; i <= prizeCount; i += 1) {
+    // Divide array into equal slots and place prizes at touching boundaries
+    const position = Math.round(i * ((totalSlots + 1) / (prizeCount + 1))) - 1;
     distributed[position] = "prize";
   }
 
   return distributed;
+}
+
+function shuffleDistributedPrizes(list: ("prize" | null)[], swapProbability = 0.5): ("prize" | null)[] {
+  const shuffled = [...list];
+
+  for (let i = 0; i < shuffled.length - 1; i++) {
+    // shuffle when adjacent positions are different and determine by swap probability
+    if (shuffled[i] !== shuffled[i + 1] && Math.random() < swapProbability) {
+      [shuffled[i], shuffled[i + 1]] = [shuffled[i + 1], shuffled[i]]; // array destructuring swap
+      i++; // skip slot just swapped so it doesn't get swapped again
+    }
+  }
+
+  return shuffled;
 }
 
 const ADMIN_TABS = ["setup", "list", "qr"] as const;
@@ -189,7 +203,8 @@ function AdminPageContent() {
     }
 
     const prizeSlots = Math.min(numericValues.prizes, numericValues.racers);
-    const shuffledPrizes = distributeEvenly(prizeSlots, numericValues.racers);
+    const distributedPrizes = distributePrizesEvenly(prizeSlots, numericValues.racers);
+    const shuffledPrizes = shuffleDistributedPrizes(distributedPrizes);
     const generatedEntries = shuffledPrizes.map((prize, index) => ({
       position: index + 1,
       prizeType: prize,
