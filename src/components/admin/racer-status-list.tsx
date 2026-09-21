@@ -56,13 +56,16 @@ export function RacerStatusList({ isLoading, hasGeneratedGeneration, generatedLi
           <table className="w-full table-fixed text-sm">
             <thead className="sticky top-0 z-10 bg-muted text-xs font-medium uppercase tracking-wide text-muted-foreground">
               <tr>
-                <th className="w-1/3 px-4 py-2 text-left" scope="col">
+                <th className="w-1/4 px-4 py-2 text-left" scope="col">
                   Bib #
                 </th>
-                <th className="w-1/3 px-4 py-2 text-left" scope="col">
+                <th className="w-1/4 px-4 py-2 text-left" scope="col">
                   Prize
                 </th>
-                <th className="w-1/3 px-4 py-2 text-left" scope="col">
+                <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                  Prize #
+                </th>
+                <th className="w-1/4 px-4 py-2 text-left" scope="col">
                   Redeemed
                 </th>
               </tr>
@@ -74,6 +77,7 @@ export function RacerStatusList({ isLoading, hasGeneratedGeneration, generatedLi
                   <td className="px-4 py-3">
                     <StatusIcon status={entry.prizeType ? "check" : "minus"} />
                   </td>
+                  <td className="px-4 py-3 text-left">{entry.prizeNumber ?? "-"}</td>
                   <td className="px-4 py-3">
                     {entry.bibNumber === null || !entry.prizeType ? (
                       <StatusIcon status="minus" />

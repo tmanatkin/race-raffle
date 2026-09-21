@@ -44,6 +44,32 @@ function shuffleDistributedPrizes(list: ("prize" | null)[], swapProbability = 0.
   return shuffled;
 }
 
+function shuffleArray<T>(list: T[]): T[] {
+  const shuffled = [...list];
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled;
+}
+
+function assignPrizeNumbers(prizeSlots: ("prize" | null)[], prizeCount: number): (number | null)[] {
+  const availablePrizeNumbers = shuffleArray(Array.from({ length: prizeCount }, (_, index) => index + 1));
+
+  let nextPrizeNumberIndex = 0;
+  return prizeSlots.map((slot) => {
+    if (slot !== "prize") {
+      return null;
+    }
+
+    const prizeNumber = availablePrizeNumbers[nextPrizeNumberIndex];
+    nextPrizeNumberIndex += 1;
+    return prizeNumber;
+  });
+}
+
 const ADMIN_TABS = ["setup", "list", "qr"] as const;
 type AdminTab = (typeof ADMIN_TABS)[number];
 
@@ -205,9 +231,11 @@ function AdminPageContent() {
     const prizeSlots = Math.min(numericValues.prizes, numericValues.racers);
     const distributedPrizes = distributePrizesEvenly(prizeSlots, numericValues.racers);
     const shuffledPrizes = shuffleDistributedPrizes(distributedPrizes);
+    const prizeNumbers = assignPrizeNumbers(shuffledPrizes, prizeSlots);
     const generatedEntries = shuffledPrizes.map((prize, index) => ({
       position: index + 1,
       prizeType: prize,
+      prizeNumber: prizeNumbers[index],
       bibNumber: null,
       redeemedAt: null,
     }));
@@ -224,6 +252,7 @@ function AdminPageContent() {
           entries: shuffledPrizes.map((prize, index) => ({
             position: index + 1,
             prizeType: prize,
+            prizeNumber: prizeNumbers[index],
           })),
         }),
       });

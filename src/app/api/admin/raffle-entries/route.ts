@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 type RaffleEntry = {
   position: number;
   prizeType: "prize" | null;
+  prizeNumber: number | null;
 };
 
 type RaffleGeneration = {
@@ -46,7 +47,7 @@ export async function GET() {
 
   const { data: entries, error: entriesError } = await supabase
     .from("raffle_entries")
-    .select("position, prize_type")
+    .select("position, prize_type, prize_number")
     .eq("generation_id", generation.id)
     .order("position", { ascending: true });
 
@@ -78,6 +79,7 @@ export async function GET() {
     entries: entries.map((entry) => ({
       position: entry.position,
       prizeType: entry.prize_type as "prize" | null,
+      prizeNumber: entry.prize_number,
       bibNumber: bibByPosition.get(entry.position) ?? null,
       redeemedAt: redeemedAtByPosition.get(entry.position) ?? null,
     })),
@@ -103,9 +105,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "The raffle generation values are invalid." }, { status: 400 });
   }
 
-  const isValid = body.entries.every(
-    (entry, index) => entry.position === index + 1 && (entry.prizeType === null || entry.prizeType === "prize")
-  );
+  const isValid = body.entries.every((entry, index) => {
+    const hasValidPosition = entry.position === index + 1;
+    const hasValidPrizeType = entry.prizeType === null || entry.prizeType === "prize";
+    const hasValidPrizeNumber =
+      entry.prizeType === "prize"
+        ? Number.isInteger(entry.prizeNumber) && (entry.prizeNumber as number) > 0
+        : entry.prizeNumber === null;
+
+    return hasValidPosition && hasValidPrizeType && hasValidPrizeNumber;
+  });
 
   if (!isValid) {
     return NextResponse.json({ error: "Raffle entries have an invalid order or prize type." }, { status: 400 });
@@ -138,6 +147,7 @@ export async function POST(request: Request) {
       generation_id: generationId,
       position: entry.position,
       prize_type: entry.prizeType,
+      prize_number: entry.prizeNumber,
     }))
   );
 

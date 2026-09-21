@@ -3,6 +3,7 @@ export type PrizeType = "prize" | null;
 export type RaffleListEntry = {
   position: number;
   prizeType: PrizeType;
+  prizeNumber: number | null;
   bibNumber: number | null;
   redeemedAt: string | null;
 };
