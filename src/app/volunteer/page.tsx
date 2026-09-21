@@ -19,6 +19,7 @@ export default function VolunteerPage() {
   const [resultStatus, setResultStatus] = useState<RedeemStatus | null>(null);
   const [resultBibNumber, setResultBibNumber] = useState<number | null>(null);
   const [resultPrizeNumber, setResultPrizeNumber] = useState<number | null>(null);
+  const [lowestBibNumber, setLowestBibNumber] = useState<number | null>(null);
   const [highestBibNumber, setHighestBibNumber] = useState<number | null>(null);
   const [totalPrizes, setTotalPrizes] = useState<number | null>(null);
 
@@ -33,8 +34,8 @@ export default function VolunteerPage() {
         }
 
         const result = (await response.json()) as {
-          generation: { prizes: number; highestBibNumber: number } | null;
-          bibSettings?: { highestBibNumber: number };
+          generation: { prizes: number; lowestBibNumber: number; highestBibNumber: number } | null;
+          bibSettings?: { lowestBibNumber: number; highestBibNumber: number };
         };
 
         if (!isCurrent) {
@@ -42,9 +43,11 @@ export default function VolunteerPage() {
         }
 
         if (result.generation) {
+          setLowestBibNumber(result.generation.lowestBibNumber);
           setHighestBibNumber(result.generation.highestBibNumber);
           setTotalPrizes(result.generation.prizes);
         } else if (result.bibSettings) {
+          setLowestBibNumber(result.bibSettings.lowestBibNumber);
           setHighestBibNumber(result.bibSettings.highestBibNumber);
         }
       } catch {
@@ -65,6 +68,16 @@ export default function VolunteerPage() {
 
     if (bibNumber === "" || !Number.isInteger(bibNumber)) {
       setError("Enter a whole number.");
+      return;
+    }
+
+    if (
+      lowestBibNumber === null ||
+      highestBibNumber === null ||
+      bibNumber < lowestBibNumber ||
+      bibNumber > highestBibNumber
+    ) {
+      setError("Invalid bib number.");
       return;
     }
 
