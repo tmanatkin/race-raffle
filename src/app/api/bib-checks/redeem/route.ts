@@ -31,16 +31,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Racer has not checked a raffle spot." }, { status: 409 });
   }
 
-  if (redeem.status === "no_prize") {
-    return NextResponse.json({ error: "Racer did not win a prize." }, { status: 409 });
-  }
-
-  if (redeem.status === "already_redeemed") {
-    return NextResponse.json({ error: "Racer has already redeemed their prize." }, { status: 409 });
-  }
-
   return NextResponse.json({
+    status: redeem.status,
     bibNumber: redeem.bib_number,
+    prizeType: redeem.prize_type,
     prizeNumber: redeem.prize_number,
     redeemedAt: redeem.redeemed_at,
   });

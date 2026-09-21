@@ -2,8 +2,15 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { BibNumberForm } from "@/components/bib-number-form";
-import { PrizeResult } from "@/components/prize-result";
-import { RedeemedConfirmation } from "@/components/redeemed-confirmation";
+import { BibCheckResult } from "@/components/bib-check-result";
+
+type CheckStatus = "no_prize" | "unredeemed" | "already_redeemed";
+
+const CHECK_STATUS_TITLE: Record<CheckStatus, string> = {
+  no_prize: "Sorry! Not this time.",
+  unredeemed: "You won! Visit the volunteer table to redeem your prize.",
+  already_redeemed: "Your prize has already been redeemed.",
+};
 
 export default function Home() {
   const [bibNumber, setBibNumber] = useState<number | "">("");
@@ -100,11 +107,12 @@ export default function Home() {
     setRedeemedAt(null);
   }
 
-  const step = redeemedAt ? "redeemed" : checkedBibNumber !== null ? "result" : "form";
+  const status: CheckStatus | null =
+    checkedBibNumber === null ? null : redeemedAt ? "already_redeemed" : prizeType === "prize" ? "unredeemed" : "no_prize";
 
   return (
     <main className="flex min-h-screen items-start justify-center p-8">
-      {step === "form" ? (
+      {status === null ? (
         <BibNumberForm
           bibNumber={bibNumber}
           onBibNumberChange={setBibNumber}
@@ -113,19 +121,12 @@ export default function Home() {
           isSubmitting={isSubmitting}
           error={error}
         />
-      ) : step === "result" && checkedBibNumber !== null ? (
-        <PrizeResult
-          bibNumber={checkedBibNumber}
-          highestBibNumber={highestBibNumber ?? checkedBibNumber}
-          prizeType={prizeType}
-          onCheckAnotherBibNumber={checkAnotherBibNumber}
-        />
       ) : checkedBibNumber !== null ? (
-        <RedeemedConfirmation
+        <BibCheckResult
           bibNumber={checkedBibNumber}
           highestBibNumber={highestBibNumber ?? checkedBibNumber}
           onCheckAnotherBibNumber={checkAnotherBibNumber}
-          title="Prize has already been redeemed."
+          title={CHECK_STATUS_TITLE[status]}
         />
       ) : null}
     </main>

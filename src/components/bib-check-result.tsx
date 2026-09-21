@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { formatPaddedNumber } from "@/lib/utils";
 
-type RedeemedConfirmationProps = {
+type BibCheckResultProps = {
   bibNumber: number;
   highestBibNumber: number;
   onCheckAnotherBibNumber: () => void;
@@ -12,14 +12,14 @@ type RedeemedConfirmationProps = {
   totalPrizes?: number;
 };
 
-export function RedeemedConfirmation({
+export function BibCheckResult({
   bibNumber,
   highestBibNumber,
   onCheckAnotherBibNumber,
-  title = "Prize Redeemed!",
+  title,
   prizeNumber,
   totalPrizes,
-}: RedeemedConfirmationProps) {
+}: BibCheckResultProps) {
   return (
     <div className="w-full max-w-sm space-y-4">
       <p className="text-lg">

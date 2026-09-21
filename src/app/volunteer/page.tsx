@@ -2,14 +2,23 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { BibNumberForm } from "@/components/bib-number-form";
-import { RedeemedConfirmation } from "@/components/redeemed-confirmation";
+import { BibCheckResult } from "@/components/bib-check-result";
+
+type RedeemStatus = "redeemed" | "already_redeemed" | "no_prize";
+
+const REDEEM_STATUS_TITLE: Record<RedeemStatus, string> = {
+  redeemed: "Racer Prize Redeemed!",
+  already_redeemed: "Racer has already redeemed prize.",
+  no_prize: "Racer did not win a prize.",
+};
 
 export default function VolunteerPage() {
   const [bibNumber, setBibNumber] = useState<number | "">("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [redeemedBibNumber, setRedeemedBibNumber] = useState<number | null>(null);
-  const [redeemedPrizeNumber, setRedeemedPrizeNumber] = useState<number | null>(null);
+  const [resultStatus, setResultStatus] = useState<RedeemStatus | null>(null);
+  const [resultBibNumber, setResultBibNumber] = useState<number | null>(null);
+  const [resultPrizeNumber, setResultPrizeNumber] = useState<number | null>(null);
   const [highestBibNumber, setHighestBibNumber] = useState<number | null>(null);
   const [totalPrizes, setTotalPrizes] = useState<number | null>(null);
 
@@ -67,14 +76,20 @@ export default function VolunteerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bibNumber }),
       });
-      const result = (await response.json()) as { error?: string; bibNumber?: number; prizeNumber?: number | null };
+      const result = (await response.json()) as {
+        error?: string;
+        status?: RedeemStatus;
+        bibNumber?: number;
+        prizeNumber?: number | null;
+      };
 
       if (!response.ok) {
         throw new Error(result.error ?? "Unable to redeem prize.");
       }
 
-      setRedeemedBibNumber(result.bibNumber ?? bibNumber);
-      setRedeemedPrizeNumber(result.prizeNumber ?? null);
+      setResultStatus(result.status ?? null);
+      setResultBibNumber(result.bibNumber ?? bibNumber);
+      setResultPrizeNumber(result.prizeNumber ?? null);
       setBibNumber("");
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Unable to redeem prize.");
@@ -85,19 +100,21 @@ export default function VolunteerPage() {
 
   function checkAnotherBibNumber() {
     setError("");
-    setRedeemedBibNumber(null);
-    setRedeemedPrizeNumber(null);
+    setResultStatus(null);
+    setResultBibNumber(null);
+    setResultPrizeNumber(null);
   }
 
   return (
     <main className="flex min-h-screen items-start justify-center p-8">
-      {redeemedBibNumber !== null ? (
-        <RedeemedConfirmation
-          bibNumber={redeemedBibNumber}
-          highestBibNumber={highestBibNumber ?? redeemedBibNumber}
+      {resultStatus !== null && resultBibNumber !== null ? (
+        <BibCheckResult
+          bibNumber={resultBibNumber}
+          highestBibNumber={highestBibNumber ?? resultBibNumber}
           onCheckAnotherBibNumber={checkAnotherBibNumber}
-          prizeNumber={redeemedPrizeNumber}
-          totalPrizes={totalPrizes ?? redeemedPrizeNumber ?? 0}
+          title={REDEEM_STATUS_TITLE[resultStatus]}
+          prizeNumber={resultStatus === "no_prize" ? null : resultPrizeNumber}
+          totalPrizes={totalPrizes ?? resultPrizeNumber ?? 0}
         />
       ) : (
         <BibNumberForm
