@@ -5,6 +5,7 @@ type RedeemBibCheckResult = {
   status: "redeemed" | "already_redeemed" | "no_prize" | "not_checked";
   bib_number: number;
   prize_type: "prize" | null;
+  prize_number: number | null;
   redeemed_at: string | null;
 };
 
@@ -40,6 +41,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     bibNumber: redeem.bib_number,
+    prizeNumber: redeem.prize_number,
     redeemedAt: redeem.redeemed_at,
   });
 }

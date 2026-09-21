@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { BibNumberForm } from "@/components/bib-number-form";
 import { RedeemedConfirmation } from "@/components/redeemed-confirmation";
 
@@ -9,6 +9,46 @@ export default function VolunteerPage() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [redeemedBibNumber, setRedeemedBibNumber] = useState<number | null>(null);
+  const [redeemedPrizeNumber, setRedeemedPrizeNumber] = useState<number | null>(null);
+  const [highestBibNumber, setHighestBibNumber] = useState<number | null>(null);
+  const [totalPrizes, setTotalPrizes] = useState<number | null>(null);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadRaffleSettings() {
+      try {
+        const response = await fetch("/api/admin/raffle-entries");
+        if (!response.ok) {
+          throw new Error("Unable to load raffle settings.");
+        }
+
+        const result = (await response.json()) as {
+          generation: { prizes: number; highestBibNumber: number } | null;
+          bibSettings?: { highestBibNumber: number };
+        };
+
+        if (!isCurrent) {
+          return;
+        }
+
+        if (result.generation) {
+          setHighestBibNumber(result.generation.highestBibNumber);
+          setTotalPrizes(result.generation.prizes);
+        } else if (result.bibSettings) {
+          setHighestBibNumber(result.bibSettings.highestBibNumber);
+        }
+      } catch {
+        // Reference values are only used for number padding, so failures are silently ignored.
+      }
+    }
+
+    void loadRaffleSettings();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
 
   async function redeemBibNumber(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,13 +67,14 @@ export default function VolunteerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bibNumber }),
       });
-      const result = (await response.json()) as { error?: string; bibNumber?: number };
+      const result = (await response.json()) as { error?: string; bibNumber?: number; prizeNumber?: number | null };
 
       if (!response.ok) {
         throw new Error(result.error ?? "Unable to redeem prize.");
       }
 
       setRedeemedBibNumber(result.bibNumber ?? bibNumber);
+      setRedeemedPrizeNumber(result.prizeNumber ?? null);
       setBibNumber("");
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Unable to redeem prize.");
@@ -45,12 +86,19 @@ export default function VolunteerPage() {
   function checkAnotherBibNumber() {
     setError("");
     setRedeemedBibNumber(null);
+    setRedeemedPrizeNumber(null);
   }
 
   return (
     <main className="flex min-h-screen items-start justify-center p-8">
       {redeemedBibNumber !== null ? (
-        <RedeemedConfirmation bibNumber={redeemedBibNumber} onCheckAnotherBibNumber={checkAnotherBibNumber} />
+        <RedeemedConfirmation
+          bibNumber={redeemedBibNumber}
+          highestBibNumber={highestBibNumber ?? redeemedBibNumber}
+          onCheckAnotherBibNumber={checkAnotherBibNumber}
+          prizeNumber={redeemedPrizeNumber}
+          totalPrizes={totalPrizes ?? redeemedPrizeNumber ?? 0}
+        />
       ) : (
         <BibNumberForm
           bibNumber={bibNumber}
