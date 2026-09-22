@@ -108,6 +108,7 @@ function AdminPageContent() {
   const [qrScanStats, setQrScanStats] = useState<QrScanStatsData | null>(null);
   const [qrScanStatsError, setQrScanStatsError] = useState("");
   const [isLoadingQrScanStats, setIsLoadingQrScanStats] = useState(true);
+  const [isResettingQrScanStats, setIsResettingQrScanStats] = useState(false);
 
   useEffect(() => {
     let isCurrent = true;
@@ -335,6 +336,27 @@ function AdminPageContent() {
     }
   }
 
+  async function resetQrScanStats() {
+    setIsResettingQrScanStats(true);
+    setQrScanStatsError("");
+
+    try {
+      const response = await fetch("/api/admin/qr-scans", { method: "DELETE" });
+
+      if (!response.ok) {
+        const result = (await response.json()) as { error?: string };
+        throw new Error(result.error ?? "Unable to reset QR scan stats.");
+      }
+
+      const result = (await response.json()) as QrScanStatsData;
+      setQrScanStats(result);
+    } catch (resetError) {
+      setQrScanStatsError(resetError instanceof Error ? resetError.message : "Unable to reset QR scan stats.");
+    } finally {
+      setIsResettingQrScanStats(false);
+    }
+  }
+
   const hasRacerStatusListChanges =
     savedValues === null || values.prizes !== savedValues.prizes || values.racers !== savedValues.racers;
   const hasBibNumberChanges =
@@ -390,7 +412,13 @@ function AdminPageContent() {
           </TabsContent>
 
           <TabsContent value="qr">
-            <QrScanStats error={qrScanStatsError} isLoading={isLoadingQrScanStats} stats={qrScanStats} />
+            <QrScanStats
+              error={qrScanStatsError}
+              isLoading={isLoadingQrScanStats}
+              isResetting={isResettingQrScanStats}
+              onReset={resetQrScanStats}
+              stats={qrScanStats}
+            />
           </TabsContent>
         </Tabs>
       </div>

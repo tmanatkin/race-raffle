@@ -26,3 +26,15 @@ export async function GET() {
     latestScanAt: latestScan?.created_at ?? null,
   });
 }
+
+export async function DELETE() {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("qr_scans").delete().not("id", "is", null);
+
+  if (error) {
+    return NextResponse.json({ error: "Unable to reset QR scan stats." }, { status: 500 });
+  }
+
+  return NextResponse.json({ totalScans: 0, latestScanAt: null });
+}
