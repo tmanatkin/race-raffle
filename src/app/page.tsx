@@ -7,8 +7,8 @@ import { BibCheckResult } from "@/components/bib-check-result";
 type CheckStatus = "no_prize" | "unredeemed" | "already_redeemed";
 
 const CHECK_STATUS_TITLE: Record<CheckStatus, string> = {
-  no_prize: "Sorry! Not this time.",
-  unredeemed: "You won! Visit the volunteer table to redeem your prize.",
+  no_prize: "Sorry! You did not win a prize. Maybe next time.",
+  unredeemed: "You won! Show your bib at the prize table to claim your prize.",
   already_redeemed: "Your prize has already been redeemed.",
 };
 
@@ -108,7 +108,13 @@ export default function Home() {
   }
 
   const status: CheckStatus | null =
-    checkedBibNumber === null ? null : redeemedAt ? "already_redeemed" : prizeType === "prize" ? "unredeemed" : "no_prize";
+    checkedBibNumber === null
+      ? null
+      : redeemedAt
+        ? "already_redeemed"
+        : prizeType === "prize"
+          ? "unredeemed"
+          : "no_prize";
 
   return (
     <main className="flex min-h-screen items-start justify-center p-8">

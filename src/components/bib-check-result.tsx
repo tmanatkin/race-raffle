@@ -23,12 +23,12 @@ export function BibCheckResult({
   return (
     <div className="w-full max-w-sm space-y-4">
       <p className="text-lg">
-        Racer <span className="font-mono">{formatPaddedNumber(bibNumber, highestBibNumber)}</span>
+        Bib #<span className="font-mono">{formatPaddedNumber(bibNumber, highestBibNumber)}</span>
       </p>
       <p className="text-lg font-semibold">{title}</p>
       {prizeNumber != null && totalPrizes != null ? (
         <p className="text-lg">
-          Prize <span className="font-mono">{formatPaddedNumber(prizeNumber, totalPrizes)}</span>
+          Prize #<span className="font-mono">{formatPaddedNumber(prizeNumber, totalPrizes)}</span>
         </p>
       ) : null}
       <Button onClick={onCheckAnotherBibNumber} type="button" variant="outline">

@@ -24,7 +24,7 @@ export function BibNumberForm({
   isLoading,
   isSubmitting,
   error,
-  label = "Enter your bib number",
+  label = "Enter your bib number to see if you won a prize!",
   submitLabel = "Submit",
   submittingLabel = "Checking...",
 }: BibNumberFormProps) {

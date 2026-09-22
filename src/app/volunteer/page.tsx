@@ -24,7 +24,7 @@ type RedeemResponse = {
 };
 
 const REDEEM_STATUS_TITLE: Record<RedeemStatus, string> = {
-  redeemed: "Racer Prize Redeemed!",
+  redeemed: "Racer won! Prize is now claimed.",
   already_redeemed: "Racer has already redeemed prize.",
   no_prize: "Racer did not win a prize.",
 };
@@ -211,7 +211,7 @@ export default function VolunteerPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Racer has not checked for a prize.</AlertDialogTitle>
+            <AlertDialogTitle>Racer has not checked bib number for a prize.</AlertDialogTitle>
             <AlertDialogDescription>
               This racer has not checked if they have won a prize yet. Would you like to check for them?
             </AlertDialogDescription>
