@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/service";
 
 type RedeemBibCheckResult = {
   status: "redeemed" | "already_redeemed" | "no_prize" | "not_checked";
