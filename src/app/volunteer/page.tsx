@@ -195,9 +195,9 @@ export default function VolunteerPage() {
           isLoading={false}
           isSubmitting={isSubmitting}
           error={error}
-          label="Enter racer's bib number to redeem"
-          submitLabel="Redeem"
-          submittingLabel="Redeeming..."
+          label="Enter racer's bib number"
+          submitLabel="Submit"
+          submittingLabel="Submitting..."
         />
       )}
 
@@ -211,15 +211,14 @@ export default function VolunteerPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Racer has not checked if they won a prize.</AlertDialogTitle>
+            <AlertDialogTitle>Racer has not checked for a prize.</AlertDialogTitle>
             <AlertDialogDescription>
-              This racer has not checked if they have won a prize yet. Would you like to check for them if they won a
-              prize?
+              This racer has not checked if they have won a prize yet. Would you like to check for them?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={checkAndRedeemBibNumber}>Check & Redeem</AlertDialogAction>
+            <AlertDialogAction onClick={checkAndRedeemBibNumber}>Continue</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
