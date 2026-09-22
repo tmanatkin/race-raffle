@@ -68,7 +68,6 @@ export function LoginPageContent({ currentRole }: { currentRole: Role | null }) 
       router.refresh();
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : "Unable to log in.");
-    } finally {
       setIsSubmitting(false);
     }
   }
