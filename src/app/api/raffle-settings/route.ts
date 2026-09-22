@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { withErrorHandling } from "@/lib/api/route-handler";
 
-export async function GET() {
+export const GET = withErrorHandling(async () => {
   const supabase = await createClient();
   const [{ data: generation, error: generationError }, { data: settings, error: settingsError }] = await Promise.all([
     supabase
@@ -18,6 +19,7 @@ export async function GET() {
   ]);
 
   if (generationError || settingsError) {
+    console.error(generationError ?? settingsError);
     return NextResponse.json({ error: "Unable to load raffle settings." }, { status: 500 });
   }
 
@@ -26,4 +28,4 @@ export async function GET() {
     highestBibNumber: settings?.highest_bib_number ?? 0,
     prizes: generation?.prize_count ?? 0,
   });
-}
+});

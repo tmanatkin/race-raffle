@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/service";
+import { withErrorHandling } from "@/lib/api/route-handler";
 
 type RaffleEntry = {
   position: number;
@@ -13,7 +14,7 @@ type RaffleGeneration = {
   racers: number;
 };
 
-export async function GET() {
+export const GET = withErrorHandling(async () => {
   const supabase = await createClient();
   const [{ data: generation, error: generationError }, { data: settings, error: settingsError }] = await Promise.all([
     supabase
@@ -30,6 +31,7 @@ export async function GET() {
   ]);
 
   if (generationError || settingsError) {
+    console.error(generationError ?? settingsError);
     return NextResponse.json({ error: "Unable to load the saved raffle." }, { status: 500 });
   }
 
@@ -52,6 +54,7 @@ export async function GET() {
     .order("position", { ascending: true });
 
   if (entriesError) {
+    console.error(entriesError);
     return NextResponse.json({ error: "Unable to load the saved raffle." }, { status: 500 });
   }
 
@@ -61,6 +64,7 @@ export async function GET() {
     .eq("generation_id", generation.id);
 
   if (checksError) {
+    console.error(checksError);
     return NextResponse.json({ error: "Unable to load the saved raffle." }, { status: 500 });
   }
 
@@ -84,9 +88,9 @@ export async function GET() {
       redeemedAt: redeemedAtByPosition.get(entry.position) ?? null,
     })),
   });
-}
+});
 
-export async function POST(request: Request) {
+export const POST = withErrorHandling(async (request: Request) => {
   const body = (await request.json()) as {
     generation?: RaffleGeneration;
     entries?: RaffleEntry[];
@@ -125,6 +129,7 @@ export async function POST(request: Request) {
   const { error: checksResetError } = await supabase.from("bib_checks").delete().not("bib_number", "is", null);
 
   if (checksResetError) {
+    console.error(checksResetError);
     return NextResponse.json({ error: "Unable to reset bib assignments." }, { status: 500 });
   }
 
@@ -139,6 +144,7 @@ export async function POST(request: Request) {
     .single();
 
   if (generationError) {
+    console.error(generationError);
     return NextResponse.json({ error: "Unable to save the generated list." }, { status: 500 });
   }
 
@@ -152,6 +158,7 @@ export async function POST(request: Request) {
   );
 
   if (entriesError) {
+    console.error(entriesError);
     await supabase.from("raffle_generations").delete().eq("id", generationId);
     return NextResponse.json({ error: "Unable to save the generated list." }, { status: 500 });
   }
@@ -160,9 +167,9 @@ export async function POST(request: Request) {
     generationId,
     generatedAt: savedGeneration.created_at,
   });
-}
+});
 
-export async function PATCH(request: Request) {
+export const PATCH = withErrorHandling(async (request: Request) => {
   const body = (await request.json()) as { lowestBibNumber?: number; highestBibNumber?: number };
   const lowestBibNumber = body.lowestBibNumber;
   const highestBibNumber = body.highestBibNumber;
@@ -193,10 +200,11 @@ export async function PATCH(request: Request) {
     .eq("id", 1);
 
   if (updateError) {
+    console.error(updateError);
     return NextResponse.json({ error: "Unable to save the bib number range." }, { status: 500 });
   }
 
   const { data: updatedSettings } = await supabase.from("raffle_settings").select("updated_at").eq("id", 1).single();
 
   return NextResponse.json({ bibLastSavedAt: updatedSettings?.updated_at ?? null });
-}
+});

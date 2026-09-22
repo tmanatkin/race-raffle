@@ -82,7 +82,14 @@ export default function VolunteerPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ bibNumber: bib }),
     });
-    const result = (await response.json()) as RedeemResponse;
+
+    let result: RedeemResponse;
+    try {
+      result = (await response.json()) as RedeemResponse;
+    } catch {
+      result = { error: "Unable to redeem prize." };
+    }
+
     return { ok: response.ok, status: response.status, result };
   }
 
@@ -146,7 +153,13 @@ export default function VolunteerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bibNumber: bib }),
       });
-      const checkResult = (await checkResponse.json()) as { error?: string };
+
+      let checkResult: { error?: string };
+      try {
+        checkResult = (await checkResponse.json()) as { error?: string };
+      } catch {
+        checkResult = { error: "Unable to check bib number." };
+      }
 
       if (!checkResponse.ok) {
         throw new Error(checkResult.error ?? "Unable to check bib number.");

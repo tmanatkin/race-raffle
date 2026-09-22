@@ -7,6 +7,7 @@ import {
   SESSION_COOKIE_MAX_AGE_SECONDS,
   SESSION_COOKIE_NAME,
 } from "@/lib/auth/session";
+import { withErrorHandling } from "@/lib/api/route-handler";
 
 function getPasswordHashForRole(role: Role): string | undefined {
   if (role === "admin") {
@@ -18,7 +19,7 @@ function getPasswordHashForRole(role: Role): string | undefined {
   return undefined;
 }
 
-export async function POST(request: Request) {
+export const POST = withErrorHandling(async (request: Request) => {
   const body = (await request.json()) as { role?: string; password?: string };
   const role = body.role;
   const password = body.password;
@@ -48,4 +49,4 @@ export async function POST(request: Request) {
   });
 
   return NextResponse.json({ role });
-}
+});
