@@ -25,7 +25,7 @@ export function LoginPageContent({ currentRole }: { currentRole: Role | null }) 
   const [showPassword, setShowPassword] = useState(false);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
   const [error, setError] = useState(
-    next ? `Log in ${isRole(roleParam) ? "as " + roleParam : ""} before continuing.` : ""
+    next ? `Log in${isRole(roleParam) ? " as " + roleParam : ""} before continuing.` : ""
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const globalCapsLockRef = useRef(false);

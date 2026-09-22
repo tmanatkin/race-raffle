@@ -16,13 +16,14 @@ import { Button } from "@/components/ui/button";
 
 type QrScanStatsProps = {
   stats: QrScanStatsData | null;
-  error: string;
+  loadError: string;
+  resetError: string;
   isLoading: boolean;
   isResetting: boolean;
   onReset: () => void;
 };
 
-export function QrScanStats({ stats, error, isLoading, isResetting, onReset }: QrScanStatsProps) {
+export function QrScanStats({ stats, loadError, resetError, isLoading, isResetting, onReset }: QrScanStatsProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   return (
@@ -36,6 +37,8 @@ export function QrScanStats({ stats, error, isLoading, isResetting, onReset }: Q
           <span className="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
           <span>Loading QR stats...</span>
         </div>
+      ) : loadError ? (
+        <p className="text-sm text-destructive">{loadError}</p>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4">
@@ -77,7 +80,7 @@ export function QrScanStats({ stats, error, isLoading, isResetting, onReset }: Q
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          {error ? <p className="text-sm text-destructive">{error}</p> : null}
+          {resetError ? <p className="text-sm text-destructive">{resetError}</p> : null}
         </>
       )}
     </section>

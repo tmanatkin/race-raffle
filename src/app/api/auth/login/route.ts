@@ -30,7 +30,8 @@ export const POST = withErrorHandling(async (request: Request) => {
 
   const passwordHash = getPasswordHashForRole(role);
   if (!passwordHash) {
-    return NextResponse.json({ error: "Login has not been configured by developer." }, { status: 500 });
+    console.error(`Missing password hash env var for role "${role}".`);
+    return NextResponse.json({ error: "Login is currently unavailable. Please try again later." }, { status: 500 });
   }
 
   const isValid = await verifyPassword(password, passwordHash);

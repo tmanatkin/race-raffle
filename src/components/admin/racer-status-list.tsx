@@ -4,6 +4,7 @@ import { formatPaddedNumber } from "@/lib/utils";
 
 type RacerStatusListProps = {
   isLoading: boolean;
+  error: string;
   hasGeneratedGeneration: boolean;
   generatedList: RaffleListEntry[];
   highestBibNumber: number;
@@ -36,13 +37,14 @@ function StatusIcon({ status }: { status: "check" | "x" | "minus" }) {
 
 export function RacerStatusList({
   isLoading,
+  error,
   hasGeneratedGeneration,
   generatedList,
   highestBibNumber,
   totalPrizes,
 }: RacerStatusListProps) {
   return (
-    <section aria-label="Racer status list" className="space-y-3">
+    <section aria-label="Racer status list" className="space-y-4">
       <div className="space-y-1">
         <h2 className="text-lg font-semibold">Racer Status List</h2>
         <p className="text-sm text-muted-foreground">Prizes will be assigned in this order.</p>
@@ -56,6 +58,8 @@ export function RacerStatusList({
           <span className="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
           <span>Loading list...</span>
         </div>
+      ) : error ? (
+        <p className="text-sm text-destructive">{error}</p>
       ) : hasGeneratedGeneration && generatedList.length === 0 ? (
         <p className="text-sm text-muted-foreground">No racers.</p>
       ) : generatedList.length === 0 ? (

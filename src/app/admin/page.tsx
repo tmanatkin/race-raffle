@@ -100,13 +100,15 @@ function AdminPageContent() {
   const [generatedList, setGeneratedList] = useState<RaffleListEntry[]>([]);
   const [hasGeneratedGeneration, setHasGeneratedGeneration] = useState(false);
   const [timestamps, setTimestamps] = useState<GenerationTimestamps | null>(null);
-  const [listError, setListError] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [generateError, setGenerateError] = useState("");
   const [bibError, setBibError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingBib, setIsSavingBib] = useState(false);
   const [qrScanStats, setQrScanStats] = useState<QrScanStatsData | null>(null);
-  const [qrScanStatsError, setQrScanStatsError] = useState("");
+  const [qrScanLoadError, setQrScanLoadError] = useState("");
+  const [qrScanResetError, setQrScanResetError] = useState("");
   const [isLoadingQrScanStats, setIsLoadingQrScanStats] = useState(true);
   const [isResettingQrScanStats, setIsResettingQrScanStats] = useState(false);
 
@@ -117,7 +119,7 @@ function AdminPageContent() {
       try {
         const response = await fetch("/api/admin/raffle-entries");
         if (!response.ok) {
-          throw new Error("Unable to load the saved raffle.");
+          throw new Error("Unable to load race setup information and prize list.");
         }
 
         const result = (await response.json()) as {
@@ -152,7 +154,7 @@ function AdminPageContent() {
         }
       } catch (loadError) {
         if (isCurrent) {
-          setListError(loadError instanceof Error ? loadError.message : "Unable to load the saved raffle.");
+          setLoadError(loadError instanceof Error ? loadError.message : "Unable to load the saved raffle.");
         }
       } finally {
         if (isCurrent) {
@@ -184,7 +186,7 @@ function AdminPageContent() {
         }
       } catch (loadError) {
         if (isCurrent) {
-          setQrScanStatsError(loadError instanceof Error ? loadError.message : "Unable to load QR scan stats.");
+          setQrScanLoadError(loadError instanceof Error ? loadError.message : "Unable to load QR scan stats.");
         }
       } finally {
         if (isCurrent) {
@@ -225,7 +227,7 @@ function AdminPageContent() {
     };
 
     if (!Object.values(numericValues).every((value) => Number.isInteger(value) && value >= 0)) {
-      setListError("All values must be whole numbers and cannot be negative.");
+      setGenerateError("All values must be whole numbers and cannot be negative.");
       return;
     }
 
@@ -241,7 +243,7 @@ function AdminPageContent() {
       redeemedAt: null,
     }));
     setIsSaving(true);
-    setListError("");
+    setGenerateError("");
     changeTab("list");
 
     try {
@@ -277,7 +279,7 @@ function AdminPageContent() {
         highestBibNumber: savedValues?.highestBibNumber ?? values.highestBibNumber,
       });
     } catch (saveError) {
-      setListError(saveError instanceof Error ? saveError.message : "Unable to save the generated list.");
+      setGenerateError(saveError instanceof Error ? saveError.message : "Unable to save the generated list.");
     } finally {
       setIsSaving(false);
     }
@@ -338,7 +340,7 @@ function AdminPageContent() {
 
   async function resetQrScanStats() {
     setIsResettingQrScanStats(true);
-    setQrScanStatsError("");
+    setQrScanResetError("");
 
     try {
       const response = await fetch("/api/admin/qr-scans", { method: "DELETE" });
@@ -351,7 +353,7 @@ function AdminPageContent() {
       const result = (await response.json()) as QrScanStatsData;
       setQrScanStats(result);
     } catch (resetError) {
-      setQrScanStatsError(resetError instanceof Error ? resetError.message : "Unable to reset QR scan stats.");
+      setQrScanResetError(resetError instanceof Error ? resetError.message : "Unable to reset QR scan stats.");
     } finally {
       setIsResettingQrScanStats(false);
     }
@@ -384,17 +386,19 @@ function AdminPageContent() {
               isLoading={isLoading}
               isSaving={isSaving}
               isSavingBib={isSavingBib}
+              loadError={loadError}
               onChange={updateValue}
               onSubmit={saveBibNumberRange}
               values={values}
             />
             <RacerStatusListGeneratorForm
-              error={listError}
+              error={generateError}
               generatedAt={timestamps?.generatedAt}
               hasChanges={hasRacerStatusListChanges}
               isLoading={isLoading}
               isGeneratingList={isSaving}
               isSavingBib={isSavingBib}
+              loadError={loadError}
               onChange={updateValue}
               onSubmit={generateList}
               values={values}
@@ -403,6 +407,7 @@ function AdminPageContent() {
 
           <TabsContent value="list">
             <RacerStatusList
+              error={loadError}
               generatedList={generatedList}
               hasGeneratedGeneration={hasGeneratedGeneration}
               highestBibNumber={typeof savedValues?.highestBibNumber === "number" ? savedValues.highestBibNumber : 0}
@@ -413,10 +418,11 @@ function AdminPageContent() {
 
           <TabsContent value="qr">
             <QrScanStats
-              error={qrScanStatsError}
               isLoading={isLoadingQrScanStats}
               isResetting={isResettingQrScanStats}
+              loadError={qrScanLoadError}
               onReset={resetQrScanStats}
+              resetError={qrScanResetError}
               stats={qrScanStats}
             />
           </TabsContent>

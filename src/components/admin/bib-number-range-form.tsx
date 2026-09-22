@@ -12,6 +12,7 @@ type BibNumberRangeFormProps = {
   isSavingBib: boolean;
   bibLastSavedAt: string | null;
   error: string;
+  loadError: string;
   onChange: (field: "lowestBibNumber" | "highestBibNumber", value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
@@ -24,9 +25,22 @@ export function BibNumberRangeForm({
   isSavingBib,
   bibLastSavedAt,
   error,
+  loadError,
   onChange,
   onSubmit,
 }: BibNumberRangeFormProps) {
+  if (!isLoading && loadError) {
+    return (
+      <section className="space-y-4">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">Bib Number Range</h2>
+          <p className="text-sm text-muted-foreground">Set the range of bib numbers used in the race.</p>
+        </div>
+        <p className="text-sm text-destructive">{loadError}</p>
+      </section>
+    );
+  }
+
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
       <section className="space-y-4">

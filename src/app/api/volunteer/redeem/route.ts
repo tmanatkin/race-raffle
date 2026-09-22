@@ -35,10 +35,7 @@ export const POST = withErrorHandling(async (request: Request) => {
   }
 
   if (redeem.status === "not_checked") {
-    return NextResponse.json(
-      { status: "not_checked", error: "Racer has not checked a raffle spot." },
-      { status: 409 }
-    );
+    return NextResponse.json({ status: "not_checked" }, { status: 409 });
   }
 
   return NextResponse.json({

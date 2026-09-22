@@ -22,6 +22,7 @@ type RacerStatusListGeneratorFormProps = {
   isSavingBib: boolean;
   generatedAt: string | null | undefined;
   error: string;
+  loadError: string;
   onChange: (field: "prizes" | "racers", value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
@@ -34,11 +35,24 @@ export function RacerStatusListGeneratorForm({
   isSavingBib,
   generatedAt,
   error,
+  loadError,
   onChange,
   onSubmit,
 }: RacerStatusListGeneratorFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+  if (!isLoading && loadError) {
+    return (
+      <section className="space-y-4">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">Racer Status List Generator</h2>
+          <p className="text-sm text-muted-foreground">Set the parameters used to generate the racer status list.</p>
+        </div>
+        <p className="text-sm text-destructive">{loadError}</p>
+      </section>
+    );
+  }
 
   return (
     <form ref={formRef} className="space-y-6" onSubmit={onSubmit}>
