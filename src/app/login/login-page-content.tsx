@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowBigUpDash, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -75,12 +76,7 @@ export function LoginPageContent({ currentRole }: { currentRole: Role | null }) 
   return (
     <main className="flex min-h-screen items-center justify-center p-8">
       <div className="w-full max-w-sm space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">Log in</h1>
-          {currentRole && currentRole === role ? (
-            <p className="rounded-md bg-green-50 px-3 py-1 text-sm text-green-700">Logged in as {currentRole}</p>
-          ) : null}
-        </div>
+        <h1 className="text-2xl font-semibold tracking-tight">Log in</h1>
 
         <Tabs
           onValueChange={(value) => {
@@ -131,10 +127,7 @@ export function LoginPageContent({ currentRole }: { currentRole: Role | null }) 
                   />
                   <div className="absolute inset-y-0 right-2 flex items-center gap-1.5">
                     {isCapsLockOn ? (
-                      <ArrowBigUpDash
-                        aria-label="Caps Lock is on"
-                        className="size-4 text-amber-500"
-                      />
+                      <ArrowBigUpDash aria-label="Caps Lock is on" className="size-4 text-amber-500" />
                     ) : null}
                     <button
                       aria-label={showPassword ? "Hide password" : "Show password"}
@@ -155,6 +148,22 @@ export function LoginPageContent({ currentRole }: { currentRole: Role | null }) 
             </form>
           </TabsContent>
         </Tabs>
+
+        {currentRole ? (
+          <p className="text-center text-sm text-muted-foreground">
+            Already logged in.{" "}
+            <Link className="text-foreground underline underline-offset-4" href={`/${currentRole}`}>
+              Continue as {currentRole}
+            </Link>
+          </p>
+        ) : (
+          <p className="text-center text-sm text-muted-foreground">
+            Looking for the prize raffle?{" "}
+            <Link className="text-foreground underline underline-offset-4" href="/">
+              Check your bib number
+            </Link>
+          </p>
+        )}
       </div>
     </main>
   );

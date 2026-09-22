@@ -13,6 +13,15 @@ function roleForPath(pathname: string): Role | null {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (pathname === "/") {
+    const session = await verifySessionCookieValue(request.cookies.get(SESSION_COOKIE_NAME)?.value);
+    if (session) {
+      return NextResponse.redirect(new URL(`/${session.role}`, request.url));
+    }
+    return NextResponse.next();
+  }
+
   const requiredRole = roleForPath(pathname);
 
   if (!requiredRole) {
@@ -38,5 +47,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/volunteer/:path*", "/api/admin/:path*", "/api/volunteer/:path*"],
+  matcher: ["/", "/admin/:path*", "/volunteer/:path*", "/api/admin/:path*", "/api/volunteer/:path*"],
 };
