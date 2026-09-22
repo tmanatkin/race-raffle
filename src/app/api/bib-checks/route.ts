@@ -10,24 +10,6 @@ type BibCheckResult = {
   redeemed_at: string | null;
 };
 
-export async function GET() {
-  const supabase = await createClient();
-  const { data: settings, error } = await supabase
-    .from("raffle_settings")
-    .select("lowest_bib_number, highest_bib_number")
-    .eq("id", 1)
-    .single();
-
-  if (error) {
-    return NextResponse.json({ error: "Unable to load bib number range settings." }, { status: 500 });
-  }
-
-  return NextResponse.json({
-    lowestBibNumber: settings.lowest_bib_number,
-    highestBibNumber: settings.highest_bib_number,
-  });
-}
-
 export async function POST(request: Request) {
   const body = (await request.json()) as { bibNumber?: number };
   const bibNumber = body.bibNumber;

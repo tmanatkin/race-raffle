@@ -26,7 +26,7 @@ export default function Home() {
   useEffect(() => {
     async function loadBibSettings() {
       try {
-        const response = await fetch("/api/bib-checks");
+        const response = await fetch("/api/raffle-settings");
         const result = (await response.json()) as {
           lowestBibNumber?: number;
           highestBibNumber?: number;
