@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { withErrorHandling } from "@/lib/api/route-handler";
 
 type BibCheckResult = {
-  status: "checked" | "already_checked" | "invalid" | "no_generation" | "list_exhausted";
+  status: "checked" | "already_checked" | "invalid" | "no_generation" | "no_racers" | "list_exhausted";
   bib_number: number;
   generation_id: string | null;
   raffle_position: number | null;
@@ -39,8 +39,11 @@ export const POST = withErrorHandling(async (request: Request) => {
     return NextResponse.json({ error: "Invalid bib number." }, { status: 400 });
   }
 
-  if (check.status === "no_generation") {
-    return NextResponse.json({ error: "Prize raffle is not available yet." }, { status: 409 });
+  if (check.status === "no_generation" || check.status === "no_racers") {
+    return NextResponse.json(
+      { error: "Prize raffle is not available yet. Please try again after the race." },
+      { status: 409 }
+    );
   }
 
   if (check.status === "list_exhausted") {
