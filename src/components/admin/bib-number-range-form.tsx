@@ -1,4 +1,4 @@
-import { FormEvent } from "react";
+import { SubmitEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +14,7 @@ type BibNumberRangeFormProps = {
   error: string;
   loadError: string;
   onChange: (field: "lowestBibNumber" | "highestBibNumber", value: string) => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
 };
 
 export function BibNumberRangeForm({

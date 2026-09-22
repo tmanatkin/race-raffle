@@ -1,4 +1,4 @@
-import { FormEvent, useRef, useState } from "react";
+import { SubmitEvent, useRef, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +24,7 @@ type PrizeListGeneratorFormProps = {
   error: string;
   loadError: string;
   onChange: (field: "prizes" | "racers", value: string) => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
 };
 
 export function PrizeListGeneratorForm({

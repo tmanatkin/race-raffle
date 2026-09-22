@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { SubmitEvent, useEffect, useState } from "react";
 import { BibNumberForm } from "@/components/bib-number-form";
 import { BibCheckResult } from "@/components/bib-check-result";
 import {
@@ -93,7 +93,7 @@ export default function VolunteerPage() {
     return { ok: response.ok, status: response.status, result };
   }
 
-  async function redeemBibNumber(event: FormEvent<HTMLFormElement>) {
+  async function redeemBibNumber(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
 

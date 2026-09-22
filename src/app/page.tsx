@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { SubmitEvent, useEffect, useState } from "react";
 import { BibNumberForm } from "@/components/bib-number-form";
 import { BibCheckResult } from "@/components/bib-check-result";
 
@@ -49,7 +49,7 @@ export default function Home() {
     void loadBibSettings();
   }, []);
 
-  async function checkBibNumber(event: FormEvent<HTMLFormElement>) {
+  async function checkBibNumber(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, Suspense, useEffect, useState } from "react";
+import { SubmitEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BibNumberRangeForm } from "@/components/admin/bib-number-range-form";
 import { PrizeListGeneratorForm } from "@/components/admin/prize-list-generator-form";
@@ -219,7 +219,7 @@ function AdminPageContent() {
     router.replace(`?${params.toString()}`, { scroll: false });
   }
 
-  async function generateList(event: FormEvent<HTMLFormElement>) {
+  async function generateList(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const numericValues = {
       prizes: values.prizes === "" ? NaN : values.prizes,
@@ -285,7 +285,7 @@ function AdminPageContent() {
     }
   }
 
-  async function saveBibNumberRange(event: FormEvent<HTMLFormElement>) {
+  async function saveBibNumberRange(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const lowestBibNumber = values.lowestBibNumber;
     const highestBibNumber = values.highestBibNumber;

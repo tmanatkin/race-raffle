@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent } from "react";
+import { SubmitEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 type BibNumberFormProps = {
   bibNumber: number | "";
   onBibNumberChange: (bibNumber: number | "") => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
   isLoading: boolean;
   isSubmitting: boolean;
   error: string;
