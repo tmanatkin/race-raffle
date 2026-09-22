@@ -46,28 +46,24 @@ export default function VolunteerPage() {
 
     async function loadRaffleSettings() {
       try {
-        const response = await fetch("/api/admin/raffle-entries");
+        const response = await fetch("/api/raffle-settings");
         if (!response.ok) {
           throw new Error("Unable to load raffle settings.");
         }
 
         const result = (await response.json()) as {
-          generation: { prizes: number; lowestBibNumber: number; highestBibNumber: number } | null;
-          bibSettings?: { lowestBibNumber: number; highestBibNumber: number };
+          lowestBibNumber: number;
+          highestBibNumber: number;
+          prizes: number;
         };
 
         if (!isCurrent) {
           return;
         }
 
-        if (result.generation) {
-          setLowestBibNumber(result.generation.lowestBibNumber);
-          setHighestBibNumber(result.generation.highestBibNumber);
-          setTotalPrizes(result.generation.prizes);
-        } else if (result.bibSettings) {
-          setLowestBibNumber(result.bibSettings.lowestBibNumber);
-          setHighestBibNumber(result.bibSettings.highestBibNumber);
-        }
+        setLowestBibNumber(result.lowestBibNumber);
+        setHighestBibNumber(result.highestBibNumber);
+        setTotalPrizes(result.prizes);
       } catch {
         // Reference values are only used for number padding, so failures are silently ignored.
       }
@@ -81,7 +77,7 @@ export default function VolunteerPage() {
   }, []);
 
   async function submitRedeem(bib: number) {
-    const response = await fetch("/api/bib-checks/redeem", {
+    const response = await fetch("/api/volunteer/redeem", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ bibNumber: bib }),
