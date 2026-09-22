@@ -3,9 +3,9 @@
 import { FormEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BibNumberRangeForm } from "@/components/admin/bib-number-range-form";
-import { RacerStatusListGeneratorForm } from "@/components/admin/racer-status-list-generator-form";
+import { PrizeListGeneratorForm } from "@/components/admin/prize-list-generator-form";
 import { QrScanStats } from "@/components/admin/qr-scan-stats";
-import { RacerStatusList } from "@/components/admin/racer-status-list";
+import { PrizeList } from "@/components/admin/prize-list";
 import { GeneratorValues, GenerationTimestamps, QrScanStatsData, RaffleListEntry } from "@/components/admin/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -359,7 +359,7 @@ function AdminPageContent() {
     }
   }
 
-  const hasRacerStatusListChanges =
+  const hasPrizeListChanges =
     savedValues === null || values.prizes !== savedValues.prizes || values.racers !== savedValues.racers;
   const hasBibNumberChanges =
     savedValues === null ||
@@ -374,7 +374,7 @@ function AdminPageContent() {
         <Tabs className="space-y-8" onValueChange={changeTab} value={activeTab}>
           <TabsList>
             <TabsTrigger value="setup">Race Setup</TabsTrigger>
-            <TabsTrigger value="list">Racer Status List</TabsTrigger>
+            <TabsTrigger value="list">Prize List</TabsTrigger>
             <TabsTrigger value="qr">QR Scans</TabsTrigger>
           </TabsList>
 
@@ -391,10 +391,10 @@ function AdminPageContent() {
               onSubmit={saveBibNumberRange}
               values={values}
             />
-            <RacerStatusListGeneratorForm
+            <PrizeListGeneratorForm
               error={generateError}
               generatedAt={timestamps?.generatedAt}
-              hasChanges={hasRacerStatusListChanges}
+              hasChanges={hasPrizeListChanges}
               isLoading={isLoading}
               isGeneratingList={isSaving}
               isSavingBib={isSavingBib}
@@ -406,7 +406,7 @@ function AdminPageContent() {
           </TabsContent>
 
           <TabsContent value="list">
-            <RacerStatusList
+            <PrizeList
               error={loadError}
               generatedList={generatedList}
               hasGeneratedGeneration={hasGeneratedGeneration}

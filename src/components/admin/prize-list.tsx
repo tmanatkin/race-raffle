@@ -2,7 +2,7 @@ import { Check, Minus, X } from "lucide-react";
 import { RaffleListEntry } from "@/components/admin/types";
 import { formatPaddedNumber } from "@/lib/utils";
 
-type RacerStatusListProps = {
+type PrizeListProps = {
   isLoading: boolean;
   error: string;
   hasGeneratedGeneration: boolean;
@@ -35,18 +35,18 @@ function StatusIcon({ status }: { status: "check" | "x" | "minus" }) {
   );
 }
 
-export function RacerStatusList({
+export function PrizeList({
   isLoading,
   error,
   hasGeneratedGeneration,
   generatedList,
   highestBibNumber,
   totalPrizes,
-}: RacerStatusListProps) {
+}: PrizeListProps) {
   return (
-    <section aria-label="Racer status list" className="space-y-4">
+    <section aria-label="Prize list" className="space-y-4">
       <div className="space-y-1">
-        <h2 className="text-lg font-semibold">Racer Status List</h2>
+        <h2 className="text-lg font-semibold">Prize List</h2>
         <p className="text-sm text-muted-foreground">Prizes will be assigned in this order.</p>
       </div>
       {isLoading ? (
@@ -63,7 +63,7 @@ export function RacerStatusList({
       ) : hasGeneratedGeneration && generatedList.length === 0 ? (
         <p className="text-sm text-muted-foreground">No racers.</p>
       ) : generatedList.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No racer status list has been generated.</p>
+        <p className="text-sm text-muted-foreground">No prize list has been generated.</p>
       ) : (
         <div className="max-h-96 overflow-y-auto rounded-md border">
           <table className="w-full table-fixed text-sm">
