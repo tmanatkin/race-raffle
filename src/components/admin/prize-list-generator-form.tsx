@@ -12,10 +12,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GeneratorValues, formatTimestamp } from "@/components/admin/types";
+import { GeneratorValues, formatPrizeListSummary, formatTimestamp } from "@/components/admin/types";
 
 type PrizeListGeneratorFormProps = {
   values: Pick<GeneratorValues, "prizes" | "racers">;
+  bibRangeSize: number | null;
   hasChanges: boolean;
   isLoading: boolean;
   isGeneratingList: boolean;
@@ -29,6 +30,7 @@ type PrizeListGeneratorFormProps = {
 
 export function PrizeListGeneratorForm({
   values,
+  bibRangeSize,
   hasChanges,
   isLoading,
   isGeneratingList,
@@ -41,6 +43,19 @@ export function PrizeListGeneratorForm({
 }: PrizeListGeneratorFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+  // Summary and warnings shown in the confirmation so typos in the counts are easy to spot before generating.
+  const prizes = values.prizes;
+  const racers = values.racers;
+  const hasValidCounts =
+    typeof prizes === "number" &&
+    Number.isInteger(prizes) &&
+    prizes >= 0 &&
+    typeof racers === "number" &&
+    Number.isInteger(racers) &&
+    racers >= 0;
+  const hasMoreRacersThanBibs = hasValidCounts && bibRangeSize !== null && racers > bibRangeSize;
+  const hasMorePrizesThanRacers = hasValidCounts && prizes > racers;
 
   if (!isLoading && loadError) {
     return (
@@ -107,6 +122,21 @@ export function PrizeListGeneratorForm({
                 <AlertDialogDescription>
                   This will replace any existing prize list. This action cannot be undone.
                 </AlertDialogDescription>
+                {hasValidCounts ? (
+                  <p className="text-sm font-medium">{formatPrizeListSummary(prizes, racers)}</p>
+                ) : null}
+                {hasMoreRacersThanBibs ? (
+                  <p className="text-sm font-medium text-amber-700">
+                    There are more racers than bib numbers in the saved bib range ({bibRangeSize}). Double-check the
+                    racer count and bib range.
+                  </p>
+                ) : null}
+                {hasMorePrizesThanRacers ? (
+                  <p className="text-sm font-medium text-amber-700">
+                    There are more prizes than racers. Only {racers} {racers === 1 ? "prize" : "prizes"} will be
+                    assigned.
+                  </p>
+                ) : null}
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>

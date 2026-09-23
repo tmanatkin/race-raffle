@@ -1,5 +1,5 @@
 import { Check, Minus, X } from "lucide-react";
-import { RaffleListEntry } from "@/components/admin/types";
+import { RaffleListEntry, formatPrizeListSummary } from "@/components/admin/types";
 import { formatPaddedNumber } from "@/lib/utils";
 
 type PrizeListProps = {
@@ -43,6 +43,8 @@ export function PrizeList({
   highestBibNumber,
   totalPrizes,
 }: PrizeListProps) {
+  const assignedPrizeCount = generatedList.filter((entry) => entry.prizeType === "prize").length;
+
   return (
     <section aria-label="Prize list" className="space-y-4">
       <div className="space-y-1">
@@ -65,48 +67,51 @@ export function PrizeList({
       ) : generatedList.length === 0 ? (
         <p className="text-sm text-muted-foreground">No prize list has been generated.</p>
       ) : (
-        <div className="max-h-96 overflow-y-auto rounded-md border">
-          <table className="w-full table-fixed text-sm">
-            <thead className="sticky top-0 z-10 bg-muted text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="w-1/4 px-4 py-2 text-left" scope="col">
-                  Bib #
-                </th>
-                <th className="w-1/4 px-4 py-2 text-left" scope="col">
-                  Prize
-                </th>
-                <th className="w-1/4 px-4 py-2 text-left" scope="col">
-                  Prize #
-                </th>
-                <th className="w-1/4 px-4 py-2 text-left" scope="col">
-                  Redeemed
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {generatedList.map((entry, index) => (
-                <tr className={index % 2 === 0 ? "bg-background" : "bg-muted/40"} key={entry.position}>
-                  <td className="px-4 py-3 text-left font-mono">
-                    {entry.bibNumber === null ? "-" : formatPaddedNumber(entry.bibNumber, highestBibNumber)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusIcon status={entry.prizeType ? "check" : "minus"} />
-                  </td>
-                  <td className="px-4 py-3 text-left font-mono">
-                    {entry.prizeNumber === null ? "-" : formatPaddedNumber(entry.prizeNumber, totalPrizes)}
-                  </td>
-                  <td className="px-4 py-3">
-                    {entry.bibNumber === null || !entry.prizeType ? (
-                      <StatusIcon status="minus" />
-                    ) : (
-                      <StatusIcon status={entry.redeemedAt ? "check" : "x"} />
-                    )}
-                  </td>
+        <>
+          <p className="text-sm font-medium">{formatPrizeListSummary(assignedPrizeCount, generatedList.length)}</p>
+          <div className="max-h-96 overflow-y-auto rounded-md border">
+            <table className="w-full table-fixed text-sm">
+              <thead className="sticky top-0 z-10 bg-muted text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <tr>
+                  <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                    Bib #
+                  </th>
+                  <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                    Prize
+                  </th>
+                  <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                    Prize #
+                  </th>
+                  <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                    Redeemed
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y">
+                {generatedList.map((entry, index) => (
+                  <tr className={index % 2 === 0 ? "bg-background" : "bg-muted/40"} key={entry.position}>
+                    <td className="px-4 py-3 text-left font-mono">
+                      {entry.bibNumber === null ? "-" : formatPaddedNumber(entry.bibNumber, highestBibNumber)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <StatusIcon status={entry.prizeType ? "check" : "minus"} />
+                    </td>
+                    <td className="px-4 py-3 text-left font-mono">
+                      {entry.prizeNumber === null ? "-" : formatPaddedNumber(entry.prizeNumber, totalPrizes)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {entry.bibNumber === null || !entry.prizeType ? (
+                        <StatusIcon status="minus" />
+                      ) : (
+                        <StatusIcon status={entry.redeemedAt ? "check" : "x"} />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </section>
   );

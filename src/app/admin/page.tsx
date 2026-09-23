@@ -365,6 +365,13 @@ function AdminPageContent() {
     savedValues === null ||
     values.lowestBibNumber !== savedValues.lowestBibNumber ||
     values.highestBibNumber !== savedValues.highestBibNumber;
+  // Uses the saved range because that is what racers' bib numbers are validated against.
+  const bibRangeSize =
+    savedValues !== null &&
+    typeof savedValues.lowestBibNumber === "number" &&
+    typeof savedValues.highestBibNumber === "number"
+      ? savedValues.highestBibNumber - savedValues.lowestBibNumber + 1
+      : null;
 
   return (
     <main className="min-h-screen p-8">
@@ -392,6 +399,7 @@ function AdminPageContent() {
               values={values}
             />
             <PrizeListGeneratorForm
+              bibRangeSize={bibRangeSize}
               error={generateError}
               generatedAt={timestamps?.generatedAt}
               hasChanges={hasPrizeListChanges}

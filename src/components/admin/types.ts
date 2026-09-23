@@ -38,3 +38,10 @@ export function formatTimestamp(timestamp: string | null) {
     }).format(new Date(timestamp)) + " (MST)"
   );
 }
+
+// e.g. "500 racers, 25 prizes"
+export function formatPrizeListSummary(prizes: number, racers: number) {
+  const racerLabel = racers === 1 ? "racer" : "racers";
+  const prizeLabel = prizes === 1 ? "prize" : "prizes";
+  return `${racers} ${racerLabel}, ${prizes} ${prizeLabel}`;
+}
