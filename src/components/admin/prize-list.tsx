@@ -68,13 +68,15 @@ export function PrizeList({
         <p className="text-sm text-muted-foreground">No prize list has been generated.</p>
       ) : (
         <div>
-          <p className="relative z-30 text-sm font-medium">{formatPrizeListSummary(assignedPrizeCount, generatedList.length)}</p>
-          <div className="sticky top-0 z-20 bg-background pt-4 sm:top-16 sm:before:absolute sm:before:inset-x-0 sm:before:bottom-full sm:before:h-16 sm:before:bg-background">
+          <p className="relative z-30 text-sm font-medium">
+            {formatPrizeListSummary(assignedPrizeCount, generatedList.length)}
+          </p>
+          <div className="sticky top-0 z-20 bg-background pt-4 lg:top-16 lg:before:absolute lg:before:inset-x-0 lg:before:bottom-full lg:before:h-16 lg:before:bg-background">
             <div className="h-2 rounded-t-md border-x border-t bg-muted" />
           </div>
           <div className="overflow-clip rounded-b-md border-x border-b">
             <table className="w-full text-sm">
-              <thead className="sticky top-6 sm:top-22 z-10 bg-muted text-xs font-medium uppercase tracking-wide whitespace-nowrap text-muted-foreground">
+              <thead className="sticky top-6 lg:top-22 z-10 bg-muted text-xs font-medium uppercase tracking-wide whitespace-nowrap text-muted-foreground">
                 <tr>
                   <th className="w-px px-3 pb-2 text-center" scope="col">
                     Bib #

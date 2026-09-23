@@ -31,7 +31,7 @@ export function RoleNav({ role }: { role: Role }) {
   }
 
   return (
-    <div className="mx-auto mt-4 flex w-fit items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-sm shadow-sm sm:fixed sm:top-4 sm:right-4 sm:z-50 sm:mx-0 sm:mt-0">
+    <div className="mx-auto mt-4 flex w-fit items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-sm shadow-sm lg:fixed lg:top-4 lg:right-4 lg:z-50 lg:mx-0 lg:mt-0">
       {role === "admin" ? (
         <nav className="flex items-center gap-1">
           <Link
