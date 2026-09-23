@@ -16,8 +16,8 @@ type Heading = {
 
 const HEADING: Record<HeadingKey, Heading> = {
   unchecked: {
-    headline: "Did you win?",
-    subheading: "Enter your bib to find out.",
+    headline: "Race Raffle",
+    subheading: "Check if you won a prize!",
   },
   no_prize: {
     headline: "Not this time.",
