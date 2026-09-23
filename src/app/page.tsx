@@ -1,16 +1,38 @@
 "use client";
 
 import { SubmitEvent, useEffect, useState } from "react";
-import { BibNumberForm } from "@/components/bib-number-form";
-import { BibCheckResult } from "@/components/bib-check-result";
+import { BibCardForm } from "@/components/bib-card-form";
+import { BibCardResult } from "@/components/bib-card-result";
 
 type CheckStatus = "no_prize" | "unredeemed" | "already_redeemed";
 
-const CHECK_STATUS_TITLE: Record<CheckStatus, string> = {
-  no_prize: "Sorry! You did not win a prize. Maybe next time.",
-  unredeemed: "You won! Show your bib at the prize table to claim your prize.",
-  already_redeemed: "Your prize has already been redeemed.",
+type HeadingKey = "unchecked" | CheckStatus;
+
+type Heading = {
+  headline: string;
+  subheading: string;
 };
+
+const HEADING: Record<HeadingKey, Heading> = {
+  unchecked: {
+    headline: "Did you win?",
+    subheading: "Enter your bib to find out.",
+  },
+  no_prize: {
+    headline: "Not this time.",
+    subheading: "Sorry! You did not win a prize.",
+  },
+  unredeemed: {
+    headline: "You won a prize!",
+    subheading: "Bring your bib to the prize table.",
+  },
+  already_redeemed: {
+    headline: "Already claimed!",
+    subheading: "Your prize has been picked up.",
+  },
+};
+
+const FONT_LOAD_TIMEOUT_MS = 3000;
 
 export default function Home() {
   const [bibNumber, setBibNumber] = useState<number | "">("");
@@ -18,6 +40,7 @@ export default function Home() {
   const [highestBibNumber, setHighestBibNumber] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isFontReady, setIsFontReady] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [checkedBibNumber, setCheckedBibNumber] = useState<number | null>(null);
   const [prizeType, setPrizeType] = useState<"prize" | null>(null);
@@ -47,6 +70,25 @@ export default function Home() {
     }
 
     void loadBibSettings();
+  }, []);
+
+  useEffect(() => {
+    async function waitForFont() {
+      // document.fonts.ready would resolve immediately here because no visible text uses the font yet,
+      // so the page font is loaded explicitly. The timeout keeps a slow connection from blocking the page.
+      const fontFamily = window.getComputedStyle(document.documentElement).fontFamily;
+      const timeout = new Promise((resolve) => setTimeout(resolve, FONT_LOAD_TIMEOUT_MS));
+
+      try {
+        await Promise.race([document.fonts.load(`1em ${fontFamily}`), timeout]);
+      } catch (fontError) {
+        console.error(fontError);
+      } finally {
+        setIsFontReady(true);
+      }
+    }
+
+    void waitForFont();
   }, []);
 
   async function checkBibNumber(event: SubmitEvent<HTMLFormElement>) {
@@ -116,25 +158,46 @@ export default function Home() {
           ? "unredeemed"
           : "no_prize";
 
+  const heading = status === null ? HEADING.unchecked : HEADING[status];
+
+  if (isLoading || !isFontReady) {
+    return (
+      <main className="flex min-h-screen items-center justify-center p-8">
+        <div aria-busy="true" aria-label="Loading">
+          <span className="block size-8 animate-spin rounded-full border-4 border-muted-foreground/30 border-t-muted-foreground" />
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="flex min-h-screen items-start justify-center p-8">
-      {status === null ? (
-        <BibNumberForm
-          bibNumber={bibNumber}
-          onBibNumberChange={setBibNumber}
-          onSubmit={checkBibNumber}
-          isLoading={isLoading}
-          isSubmitting={isSubmitting}
-          error={error}
-        />
-      ) : checkedBibNumber !== null ? (
-        <BibCheckResult
-          bibNumber={checkedBibNumber}
-          highestBibNumber={highestBibNumber ?? checkedBibNumber}
-          onCheckAnotherBibNumber={checkAnotherBibNumber}
-          title={CHECK_STATUS_TITLE[status]}
-        />
-      ) : null}
+      <div className="@container w-full max-w-sm space-y-8">
+        <div className="space-y-3">
+          <h1 className="text-center text-[30cqi] leading-[0.85] font-bold font-stretch-[25%] uppercase [font-style:oblique_10deg]">
+            {heading.headline}
+          </h1>
+          <p className="text-center text-[8cqi] font-medium font-stretch-50% tracking-wide text-balance">
+            {heading.subheading}
+          </p>
+        </div>
+        {status === null ? (
+          <BibCardForm
+            bibNumber={bibNumber}
+            highestBibNumber={highestBibNumber ?? 0}
+            onBibNumberChange={setBibNumber}
+            onSubmit={checkBibNumber}
+            isSubmitting={isSubmitting}
+            error={error}
+          />
+        ) : checkedBibNumber !== null ? (
+          <BibCardResult
+            bibNumber={checkedBibNumber}
+            highestBibNumber={highestBibNumber ?? checkedBibNumber}
+            onCheckAnotherBibNumber={checkAnotherBibNumber}
+          />
+        ) : null}
+      </div>
     </main>
   );
 }
