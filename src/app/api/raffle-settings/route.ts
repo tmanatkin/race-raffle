@@ -11,11 +11,7 @@ export const GET = withErrorHandling(async () => {
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    supabase
-      .from("raffle_settings")
-      .select("lowest_bib_number, highest_bib_number")
-      .eq("id", 1)
-      .maybeSingle(),
+    supabase.from("raffle_settings").select("lowest_bib_number, highest_bib_number").eq("id", 1).maybeSingle(),
   ]);
 
   if (generationError || settingsError) {

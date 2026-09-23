@@ -16,6 +16,10 @@ function toBase64Url(bytes) {
 
 const salt = crypto.getRandomValues(new Uint8Array(16));
 const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
-const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: ITERATIONS, hash: "SHA-256" }, key, KEY_LENGTH_BITS);
+const bits = await crypto.subtle.deriveBits(
+  { name: "PBKDF2", salt, iterations: ITERATIONS, hash: "SHA-256" },
+  key,
+  KEY_LENGTH_BITS
+);
 
 console.log(`pbkdf2.${ITERATIONS}.${toBase64Url(salt)}.${toBase64Url(new Uint8Array(bits))}`);

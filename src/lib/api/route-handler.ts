@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 
-export function withErrorHandling<Args extends unknown[]>(
-  handler: (...args: Args) => Promise<Response>
-) {
+export function withErrorHandling<Args extends unknown[]>(handler: (...args: Args) => Promise<Response>) {
   return async (...args: Args): Promise<Response> => {
     try {
       return await handler(...args);

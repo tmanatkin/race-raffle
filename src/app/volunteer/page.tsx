@@ -363,8 +363,7 @@ export default function VolunteerPage() {
             <AlertDialogTitle>
               {notCheckedBibNumber !== null && highestBibNumber !== null ? (
                 <>
-                  Bib #
-                  <span className="font-mono">{formatPaddedNumber(notCheckedBibNumber, highestBibNumber)}</span>{" "}
+                  Bib #<span className="font-mono">{formatPaddedNumber(notCheckedBibNumber, highestBibNumber)}</span>{" "}
                   has not been checked for a prize.
                 </>
               ) : null}

@@ -29,8 +29,7 @@ export async function proxy(request: NextRequest) {
   }
 
   const session = await verifySessionCookieValue(request.cookies.get(SESSION_COOKIE_NAME)?.value);
-  const isAuthorized =
-    session?.role === requiredRole || (requiredRole === "volunteer" && session?.role === "admin");
+  const isAuthorized = session?.role === requiredRole || (requiredRole === "volunteer" && session?.role === "admin");
 
   if (isAuthorized) {
     return NextResponse.next();

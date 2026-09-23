@@ -40,12 +40,7 @@ export function BibCheckResult({
       ) : null}
       <div className="flex flex-wrap items-center gap-3">
         {actions}
-        <Button
-          disabled={isCheckAnotherDisabled}
-          onClick={onCheckAnotherBibNumber}
-          type="button"
-          variant="outline"
-        >
+        <Button disabled={isCheckAnotherDisabled} onClick={onCheckAnotherBibNumber} type="button" variant="outline">
           Check another bib number
         </Button>
       </div>
