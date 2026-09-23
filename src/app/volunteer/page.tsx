@@ -315,7 +315,7 @@ export default function VolunteerPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-start justify-center p-8">
+    <main className="flex items-start justify-center p-8">
       {resultStatus !== null && resultBibNumber !== null ? (
         <BibCheckResult
           bibNumber={resultBibNumber}

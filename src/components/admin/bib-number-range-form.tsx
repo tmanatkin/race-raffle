@@ -50,7 +50,7 @@ export function BibNumberRangeForm({
       <section className="space-y-4">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold">Bib Number Range</h2>
-          <p className="text-sm text-muted-foreground">Set the range of bib numbers used in the race.</p>
+          <p className="text-sm text-muted-foreground">Range of bib numbers used in the race.</p>
         </div>
         <p className="text-sm text-destructive">{loadError}</p>
       </section>
@@ -62,7 +62,7 @@ export function BibNumberRangeForm({
       <section className="space-y-4">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold">Bib Number Range</h2>
-          <p className="text-sm text-muted-foreground">Set the range of bib numbers used in the race.</p>
+          <p className="text-sm text-muted-foreground">Range of bib numbers used in the race.</p>
         </div>
         {hasChanges && !isLoading ? <p className="text-xs font-medium text-amber-700">Unsaved changes</p> : null}
         <div className="grid grid-cols-2 gap-4">

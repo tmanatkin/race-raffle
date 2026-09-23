@@ -425,7 +425,7 @@ function AdminPageContent() {
       : null;
 
   return (
-    <main className="min-h-screen p-8">
+    <main className="p-8">
       <div className="mx-auto w-full max-w-2xl space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">Admin</h1>
 

@@ -62,7 +62,7 @@ export function PrizeListGeneratorForm({
       <section className="space-y-4">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold">Prize List Generator</h2>
-          <p className="text-sm text-muted-foreground">Set the parameters used to generate the prize list.</p>
+          <p className="text-sm text-muted-foreground">Numbers used to generate the prize list.</p>
         </div>
         <p className="text-sm text-destructive">{loadError}</p>
       </section>
@@ -74,38 +74,40 @@ export function PrizeListGeneratorForm({
       <section className="space-y-4">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold">Prize List Generator</h2>
-          <p className="text-sm text-muted-foreground">Set the parameters used to generate the prize list.</p>
+          <p className="text-sm text-muted-foreground">Numbers used to generate the prize list.</p>
         </div>
         {hasChanges && !isLoading ? <p className="text-xs font-medium text-amber-700">Unsaved changes</p> : null}
-        <div className="space-y-2">
-          <Label htmlFor="prizes">Total number of prizes</Label>
-          <Input
-            id="prizes"
-            autoComplete="off"
-            disabled={isLoading || isGeneratingList}
-            inputMode="numeric"
-            min="0"
-            onChange={(event) => onChange("prizes", event.target.value)}
-            placeholder={isLoading ? "-" : undefined}
-            step="1"
-            type="number"
-            value={isLoading ? "" : values.prizes}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="racers">Total number of people racing</Label>
-          <Input
-            id="racers"
-            autoComplete="off"
-            disabled={isLoading || isGeneratingList}
-            inputMode="numeric"
-            min="0"
-            onChange={(event) => onChange("racers", event.target.value)}
-            placeholder={isLoading ? "-" : undefined}
-            step="1"
-            type="number"
-            value={isLoading ? "" : values.racers}
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="prizes">Total prizes</Label>
+            <Input
+              id="prizes"
+              autoComplete="off"
+              disabled={isLoading || isGeneratingList}
+              inputMode="numeric"
+              min="0"
+              onChange={(event) => onChange("prizes", event.target.value)}
+              placeholder={isLoading ? "-" : undefined}
+              step="1"
+              type="number"
+              value={isLoading ? "" : values.prizes}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="racers">Total racers</Label>
+            <Input
+              id="racers"
+              autoComplete="off"
+              disabled={isLoading || isGeneratingList}
+              inputMode="numeric"
+              min="0"
+              onChange={(event) => onChange("racers", event.target.value)}
+              placeholder={isLoading ? "-" : undefined}
+              step="1"
+              type="number"
+              value={isLoading ? "" : values.racers}
+            />
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <AlertDialog onOpenChange={setIsConfirmOpen} open={isConfirmOpen}>
