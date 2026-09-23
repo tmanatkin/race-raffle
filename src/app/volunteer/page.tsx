@@ -53,6 +53,7 @@ export default function VolunteerPage() {
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [isUndoing, setIsUndoing] = useState(false);
   const [isUndoConfirmOpen, setIsUndoConfirmOpen] = useState(false);
+  const [isLeaveConfirmOpen, setIsLeaveConfirmOpen] = useState(false);
   const [resultError, setResultError] = useState("");
   const [resultStatus, setResultStatus] = useState<ResultStatus | null>(null);
   const [resultBibNumber, setResultBibNumber] = useState<number | null>(null);
@@ -288,11 +289,23 @@ export default function VolunteerPage() {
   }
 
   function checkAnotherBibNumber() {
+    setIsLeaveConfirmOpen(false);
     setError("");
     setResultError("");
     setResultStatus(null);
     setResultBibNumber(null);
     setResultPrizeNumber(null);
+  }
+
+  // Leaving an unredeemed winner's result is usually a typo'd lookup, but it can also mean the prize was
+  // handed over without being marked, so confirm before moving on.
+  function requestCheckAnotherBibNumber() {
+    if (resultStatus === "unredeemed") {
+      setIsLeaveConfirmOpen(true);
+      return;
+    }
+
+    checkAnotherBibNumber();
   }
 
   return (
@@ -301,7 +314,7 @@ export default function VolunteerPage() {
         <BibCheckResult
           bibNumber={resultBibNumber}
           highestBibNumber={highestBibNumber ?? resultBibNumber}
-          onCheckAnotherBibNumber={checkAnotherBibNumber}
+          onCheckAnotherBibNumber={requestCheckAnotherBibNumber}
           title={RESULT_STATUS_TITLE[resultStatus]}
           prizeNumber={resultStatus === "no_prize" ? null : resultPrizeNumber}
           totalPrizes={totalPrizes ?? resultPrizeNumber ?? 0}
@@ -395,6 +408,42 @@ export default function VolunteerPage() {
             <AlertDialogAction onClick={undoRedemption} variant="destructive">
               Undo redemption
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog onOpenChange={setIsLeaveConfirmOpen} open={isLeaveConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {resultBibNumber !== null ? (
+                <>
+                  Leave without redeeming Bib #
+                  <span className="font-mono">
+                    {formatPaddedNumber(resultBibNumber, highestBibNumber ?? resultBibNumber)}
+                  </span>
+                  ?
+                </>
+              ) : null}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {resultPrizeNumber !== null ? (
+                <>
+                  This racer won Prize #
+                  <span className="font-mono">
+                    {formatPaddedNumber(resultPrizeNumber, totalPrizes ?? resultPrizeNumber)}
+                  </span>
+                  , but it has not been marked as redeemed.
+                </>
+              ) : (
+                "This racer won a prize, but it has not been marked as redeemed."
+              )}{" "}
+              If the prize was handed over, go back and mark it as redeemed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Go back</AlertDialogCancel>
+            <AlertDialogAction onClick={checkAnotherBibNumber}>Leave without redeeming</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
