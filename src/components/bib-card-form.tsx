@@ -14,6 +14,7 @@ type BibCardFormProps = {
   onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
   isSubmitting: boolean;
   error: string;
+  autoFocus?: boolean;
 };
 
 export function BibCardForm({
@@ -23,6 +24,7 @@ export function BibCardForm({
   onSubmit,
   isSubmitting,
   error,
+  autoFocus = false,
 }: BibCardFormProps) {
   return (
     <form className="w-full space-y-4" onSubmit={onSubmit}>
@@ -33,6 +35,7 @@ export function BibCardForm({
         <Input
           id="race-bib-number"
           autoComplete="off"
+          autoFocus={autoFocus}
           inputMode="numeric"
           min="0"
           name="raceBibNumber"

@@ -1,10 +1,12 @@
 "use client";
 
 import { SubmitEvent, useEffect, useState } from "react";
-import { BibNumberForm } from "@/components/bib-number-form";
+import { BibCardForm } from "@/components/bib-card-form";
 import { BibCheckResult } from "@/components/bib-check-result";
+import { CheckeredStripe } from "@/components/checkered-stripe";
 import { Button } from "@/components/ui/button";
-import { formatPaddedNumber } from "@/lib/utils";
+import { cn, formatPaddedNumber } from "@/lib/utils";
+import { useIsFontReady } from "@/lib/use-is-font-ready";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,16 +41,47 @@ type UnredeemResponse = {
   prizeNumber?: number | null;
 };
 
-const RESULT_STATUS_TITLE: Record<ResultStatus, string> = {
-  unredeemed: "Racer won! Confirm the bib number matches the racer's bib before redeeming.",
-  redeemed: "Racer won! Prize is now claimed.",
-  already_redeemed: "Racer has already redeemed prize.",
-  no_prize: "Racer did not win a prize.",
+type HeadingKey = "lookup" | ResultStatus;
+
+type Heading = {
+  headline: string;
+  subheading: string;
+  className: string;
+};
+
+const HEADING: Record<HeadingKey, Heading> = {
+  lookup: {
+    headline: "Prize table",
+    subheading: "Enter the number on the racer's bib.",
+    className: "text-primary",
+  },
+  unredeemed: {
+    headline: "Racer won",
+    subheading: "Confirm the bib numbers match.",
+    className: "text-primary",
+  },
+  redeemed: {
+    headline: "Redeemed",
+    subheading: "Ready for the next racer.",
+    className: "text-foreground",
+  },
+  already_redeemed: {
+    headline: "Picked up",
+    subheading: "This prize has already been claimed.",
+    className: "text-destructive",
+  },
+  no_prize: {
+    headline: "No prize",
+    subheading: "This racer did not win a prize.",
+    className: "text-muted-foreground",
+  },
 };
 
 export default function VolunteerPage() {
   const [bibNumber, setBibNumber] = useState<number | "">("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const isFontReady = useIsFontReady();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [isUndoing, setIsUndoing] = useState(false);
@@ -71,15 +104,16 @@ export default function VolunteerPage() {
     async function loadRaffleSettings() {
       try {
         const response = await fetch("/api/raffle-settings");
-        if (!response.ok) {
-          throw new Error("Unable to load raffle settings.");
-        }
-
         const result = (await response.json()) as {
-          lowestBibNumber: number;
-          highestBibNumber: number;
-          prizes: number;
+          lowestBibNumber?: number;
+          highestBibNumber?: number;
+          prizes?: number;
+          error?: string;
         };
+
+        if (!response.ok || result.lowestBibNumber === undefined || result.highestBibNumber === undefined) {
+          throw new Error(result.error ?? "Unable to load raffle settings.");
+        }
 
         if (!isCurrent) {
           return;
@@ -87,9 +121,19 @@ export default function VolunteerPage() {
 
         setLowestBibNumber(result.lowestBibNumber);
         setHighestBibNumber(result.highestBibNumber);
-        setTotalPrizes(result.prizes);
-      } catch {
-        // Reference values are only used for number padding, so failures are silently ignored.
+        setTotalPrizes(result.prizes ?? null);
+      } catch (loadError) {
+        if (!isCurrent) {
+          return;
+        }
+
+        // The bib range is needed to validate lookups, so a failure is shown instead of letting every
+        // lookup report "Invalid bib number."
+        setError(loadError instanceof Error ? loadError.message : "Unable to load raffle settings.");
+      } finally {
+        if (isCurrent) {
+          setIsLoading(false);
+        }
       }
     }
 
@@ -314,48 +358,90 @@ export default function VolunteerPage() {
     checkAnotherBibNumber();
   }
 
+  const heading = resultStatus === null ? HEADING.lookup : HEADING[resultStatus];
+  const displayedPrizeNumber = resultStatus === null || resultStatus === "no_prize" ? null : resultPrizeNumber;
+
+  if (isLoading || !isFontReady) {
+    return (
+      <main className="flex items-start justify-center p-8">
+        <div aria-busy="true" aria-label="Loading">
+          <span className="block size-8 animate-spin rounded-full border-4 border-muted-foreground/30 border-t-muted-foreground" />
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="flex items-start justify-center p-8">
-      {resultStatus !== null && resultBibNumber !== null ? (
-        <BibCheckResult
-          bibNumber={resultBibNumber}
-          highestBibNumber={highestBibNumber ?? resultBibNumber}
-          onCheckAnotherBibNumber={requestCheckAnotherBibNumber}
-          title={RESULT_STATUS_TITLE[resultStatus]}
-          prizeNumber={resultStatus === "no_prize" ? null : resultPrizeNumber}
-          totalPrizes={totalPrizes ?? resultPrizeNumber ?? 0}
-          actions={
-            resultStatus === "unredeemed" ? (
-              <Button disabled={isRedeeming} onClick={redeemPrize} type="button">
-                {isRedeeming ? "Redeeming..." : "Mark as redeemed"}
-              </Button>
-            ) : resultStatus === "redeemed" || resultStatus === "already_redeemed" ? (
-              <Button
-                disabled={isUndoing}
-                onClick={() => setIsUndoConfirmOpen(true)}
-                type="button"
-                variant="destructive"
+      <div className="@container w-full max-w-sm space-y-6">
+        <div className="space-y-2">
+          <div className="flex items-end justify-between gap-4">
+            <div className="min-w-0 space-y-2">
+              <p className="text-sm font-bold tracking-widest text-muted-foreground uppercase">Volunteer</p>
+              <h1
+                className={cn("text-[14cqi] leading-[0.9] font-bold font-stretch-[25%] uppercase", heading.className)}
               >
-                {isUndoing ? "Undoing..." : "Undo redemption"}
-              </Button>
-            ) : null
-          }
-          isCheckAnotherDisabled={isRedeeming || isUndoing}
-          error={resultError}
-        />
-      ) : (
-        <BibNumberForm
-          bibNumber={bibNumber}
-          onBibNumberChange={setBibNumber}
-          onSubmit={lookUpBibNumber}
-          isLoading={false}
-          isSubmitting={isSubmitting}
-          error={error}
-          label="Enter racer's bib number"
-          submitLabel="Submit"
-          submittingLabel="Submitting..."
-        />
-      )}
+                {heading.headline}
+              </h1>
+            </div>
+            {displayedPrizeNumber !== null ? (
+              <div className="shrink-0 space-y-2 text-right">
+                <p className="text-sm font-bold tracking-widest text-muted-foreground uppercase">Prize</p>
+                <p className="text-[14cqi] leading-[0.9] font-bold font-stretch-[25%]">
+                  #{formatPaddedNumber(displayedPrizeNumber, totalPrizes ?? displayedPrizeNumber)}
+                </p>
+              </div>
+            ) : null}
+          </div>
+          <p className="text-[5.5cqi] leading-snug font-medium text-balance">{heading.subheading}</p>
+        </div>
+        <CheckeredStripe />
+
+        {resultStatus !== null && resultBibNumber !== null ? (
+          <BibCheckResult
+            bibNumber={resultBibNumber}
+            highestBibNumber={highestBibNumber ?? resultBibNumber}
+            onCheckAnotherBibNumber={requestCheckAnotherBibNumber}
+            primaryAction={
+              resultStatus === "unredeemed" ? (
+                <Button
+                  className="h-14 w-full rounded-xl text-lg font-bold"
+                  disabled={isRedeeming}
+                  onClick={redeemPrize}
+                  type="button"
+                >
+                  {isRedeeming ? "Redeeming..." : "Mark as redeemed"}
+                </Button>
+              ) : null
+            }
+            secondaryAction={
+              resultStatus === "redeemed" || resultStatus === "already_redeemed" ? (
+                <Button
+                  className="h-14 w-full rounded-xl text-base font-bold"
+                  disabled={isUndoing}
+                  onClick={() => setIsUndoConfirmOpen(true)}
+                  type="button"
+                  variant="destructive"
+                >
+                  {isUndoing ? "Undoing..." : "Undo redemption"}
+                </Button>
+              ) : null
+            }
+            isCheckAnotherDisabled={isRedeeming || isUndoing}
+            error={resultError}
+          />
+        ) : (
+          <BibCardForm
+            bibNumber={bibNumber}
+            highestBibNumber={highestBibNumber ?? 0}
+            onBibNumberChange={setBibNumber}
+            onSubmit={lookUpBibNumber}
+            isSubmitting={isSubmitting}
+            error={error}
+            autoFocus
+          />
+        )}
+      </div>
 
       <AlertDialog onOpenChange={setIsNotCheckedDialogOpen} open={isNotCheckedDialogOpen}>
         <AlertDialogContent>

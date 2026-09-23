@@ -1,17 +1,16 @@
 "use client";
 
 import { ReactNode } from "react";
+import { BIB_NUMBER_CLASS_NAME, BibCard } from "@/components/bib-card";
 import { Button } from "@/components/ui/button";
-import { formatPaddedNumber } from "@/lib/utils";
+import { cn, formatPaddedNumber } from "@/lib/utils";
 
 type BibCheckResultProps = {
   bibNumber: number;
   highestBibNumber: number;
   onCheckAnotherBibNumber: () => void;
-  title?: string;
-  prizeNumber?: number | null;
-  totalPrizes?: number;
-  actions?: ReactNode;
+  primaryAction?: ReactNode;
+  secondaryAction?: ReactNode;
   isCheckAnotherDisabled?: boolean;
   error?: string;
 };
@@ -20,31 +19,36 @@ export function BibCheckResult({
   bibNumber,
   highestBibNumber,
   onCheckAnotherBibNumber,
-  title,
-  prizeNumber,
-  totalPrizes,
-  actions,
+  primaryAction,
+  secondaryAction,
   isCheckAnotherDisabled = false,
   error,
 }: BibCheckResultProps) {
   return (
-    <div className="w-full max-w-sm space-y-4">
-      <p className="text-lg">
-        Bib #<span className="font-mono">{formatPaddedNumber(bibNumber, highestBibNumber)}</span>
-      </p>
-      <p className="text-lg font-semibold">{title}</p>
-      {prizeNumber != null && totalPrizes != null ? (
-        <p className="text-lg">
-          Prize #<span className="font-mono">{formatPaddedNumber(prizeNumber, totalPrizes)}</span>
+    <div className="w-full space-y-4">
+      <BibCard>
+        <p className="text-center text-sm leading-none font-bold tracking-widest uppercase">Bib number</p>
+        <p className={BIB_NUMBER_CLASS_NAME}>{formatPaddedNumber(bibNumber, highestBibNumber)}</p>
+      </BibCard>
+      {primaryAction}
+      <Button
+        className={cn("w-full rounded-xl font-bold", primaryAction ? "h-12 text-base" : "h-14 text-lg")}
+        disabled={isCheckAnotherDisabled}
+        onClick={onCheckAnotherBibNumber}
+        type="button"
+        variant={primaryAction ? "outline" : "default"}
+      >
+        Check another bib
+      </Button>
+      {secondaryAction}
+      {error ? (
+        <p
+          role="alert"
+          className="rounded-xl border-2 border-destructive bg-destructive/10 px-4 py-3 text-center text-lg leading-tight font-semibold text-balance text-destructive"
+        >
+          {error}
         </p>
       ) : null}
-      <div className="flex flex-wrap items-center gap-3">
-        {actions}
-        <Button disabled={isCheckAnotherDisabled} onClick={onCheckAnotherBibNumber} type="button" variant="outline">
-          Check another bib
-        </Button>
-      </div>
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
     </div>
   );
 }

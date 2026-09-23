@@ -4,6 +4,7 @@ import { SubmitEvent, useEffect, useState } from "react";
 import { BibCardForm } from "@/components/bib-card-form";
 import { BibCardResult } from "@/components/bib-card-result";
 import { CheckeredStripe } from "@/components/checkered-stripe";
+import { useIsFontReady } from "@/lib/use-is-font-ready";
 
 type CheckStatus = "no_prize" | "unredeemed" | "already_redeemed";
 
@@ -33,15 +34,13 @@ const HEADING: Record<HeadingKey, Heading> = {
   },
 };
 
-const FONT_LOAD_TIMEOUT_MS = 3000;
-
 export default function Home() {
   const [bibNumber, setBibNumber] = useState<number | "">("");
   const [lowestBibNumber, setLowestBibNumber] = useState<number | null>(null);
   const [highestBibNumber, setHighestBibNumber] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isFontReady, setIsFontReady] = useState(false);
+  const isFontReady = useIsFontReady();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [checkedBibNumber, setCheckedBibNumber] = useState<number | null>(null);
   const [prizeType, setPrizeType] = useState<"prize" | null>(null);
@@ -71,25 +70,6 @@ export default function Home() {
     }
 
     void loadBibSettings();
-  }, []);
-
-  useEffect(() => {
-    async function waitForFont() {
-      // document.fonts.ready would resolve immediately here because no visible text uses the font yet,
-      // so the page font is loaded explicitly. The timeout keeps a slow connection from blocking the page.
-      const fontFamily = window.getComputedStyle(document.documentElement).fontFamily;
-      const timeout = new Promise((resolve) => setTimeout(resolve, FONT_LOAD_TIMEOUT_MS));
-
-      try {
-        await Promise.race([document.fonts.load(`1em ${fontFamily}`), timeout]);
-      } catch (fontError) {
-        console.error(fontError);
-      } finally {
-        setIsFontReady(true);
-      }
-    }
-
-    void waitForFont();
   }, []);
 
   async function checkBibNumber(event: SubmitEvent<HTMLFormElement>) {
