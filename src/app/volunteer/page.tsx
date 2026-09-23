@@ -54,6 +54,7 @@ export default function VolunteerPage() {
   const [isUndoing, setIsUndoing] = useState(false);
   const [isUndoConfirmOpen, setIsUndoConfirmOpen] = useState(false);
   const [isLeaveConfirmOpen, setIsLeaveConfirmOpen] = useState(false);
+  const [isResultFromUndo, setIsResultFromUndo] = useState(false);
   const [resultError, setResultError] = useState("");
   const [resultStatus, setResultStatus] = useState<ResultStatus | null>(null);
   const [resultBibNumber, setResultBibNumber] = useState<number | null>(null);
@@ -147,6 +148,7 @@ export default function VolunteerPage() {
   }
 
   function showResult(status: ResultStatus, bib: number, prizeNumber: number | null) {
+    setIsResultFromUndo(false);
     setResultStatus(status);
     setResultBibNumber(bib);
     setResultPrizeNumber(prizeNumber);
@@ -253,6 +255,7 @@ export default function VolunteerPage() {
         throw new Error(result.error ?? "Unable to redeem prize.");
       }
 
+      setIsResultFromUndo(false);
       setResultStatus(result.status);
       setResultPrizeNumber(result.prizeNumber ?? null);
     } catch (submitError) {
@@ -279,6 +282,7 @@ export default function VolunteerPage() {
       }
 
       // "already_unredeemed" means another volunteer already undid it, so both land on the unredeemed screen.
+      setIsResultFromUndo(true);
       setResultStatus(result.status === "no_prize" ? "no_prize" : "unredeemed");
       setResultPrizeNumber(result.prizeNumber ?? null);
     } catch (submitError) {
@@ -290,6 +294,7 @@ export default function VolunteerPage() {
 
   function checkAnotherBibNumber() {
     setIsLeaveConfirmOpen(false);
+    setIsResultFromUndo(false);
     setError("");
     setResultError("");
     setResultStatus(null);
@@ -298,9 +303,10 @@ export default function VolunteerPage() {
   }
 
   // Leaving an unredeemed winner's result is usually a typo'd lookup, but it can also mean the prize was
-  // handed over without being marked, so confirm before moving on.
+  // handed over without being marked, so confirm before moving on. Skipped after an undo, since the undo
+  // confirmation already established the prize is back on the table.
   function requestCheckAnotherBibNumber() {
-    if (resultStatus === "unredeemed") {
+    if (resultStatus === "unredeemed" && !isResultFromUndo) {
       setIsLeaveConfirmOpen(true);
       return;
     }
