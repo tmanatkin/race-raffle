@@ -20,7 +20,7 @@ export function LoginPageContent({ currentRole }: { currentRole: Role | null }) 
   const searchParams = useSearchParams();
   const roleParam = searchParams.get("role");
   const next = searchParams.get("next");
-  const [role, setRole] = useState<Role>(isRole(roleParam) ? roleParam : (currentRole ?? "admin"));
+  const [role, setRole] = useState<Role>(isRole(roleParam) ? roleParam : (currentRole ?? "volunteer"));
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
@@ -88,8 +88,8 @@ export function LoginPageContent({ currentRole }: { currentRole: Role | null }) 
           value={role}
         >
           <TabsList>
-            <TabsTrigger value="admin">Admin</TabsTrigger>
             <TabsTrigger value="volunteer">Volunteer</TabsTrigger>
+            <TabsTrigger value="admin">Admin</TabsTrigger>
           </TabsList>
           <TabsContent value={role}>
             <form className="space-y-4 pt-4" onSubmit={handleSubmit}>
