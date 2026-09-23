@@ -7,6 +7,7 @@ const googleSansFlex = localFont({
   src: "./fonts/GoogleSansFlex-Variable.woff2",
   variable: "--font-sans",
   weight: "1 1000",
+  style: "oblique 0deg 10deg",
   declarations: [{ prop: "font-stretch", value: "25% 151%" }],
   display: "swap",
 });
