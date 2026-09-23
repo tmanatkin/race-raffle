@@ -47,7 +47,7 @@ export function PrizeList({
 
   return (
     <section aria-label="Prize list" className="space-y-4">
-      <div className="space-y-1">
+      <div className="relative z-30 space-y-1">
         <h2 className="text-lg font-semibold">Prize List</h2>
         <p className="text-sm text-muted-foreground">Prizes will be assigned in this order.</p>
       </div>
@@ -67,39 +67,42 @@ export function PrizeList({
       ) : generatedList.length === 0 ? (
         <p className="text-sm text-muted-foreground">No prize list has been generated.</p>
       ) : (
-        <>
-          <p className="text-sm font-medium">{formatPrizeListSummary(assignedPrizeCount, generatedList.length)}</p>
-          <div className="max-h-96 overflow-y-auto rounded-md border">
-            <table className="w-full table-fixed text-sm">
-              <thead className="sticky top-0 z-10 bg-muted text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <div>
+          <p className="relative z-30 text-sm font-medium">{formatPrizeListSummary(assignedPrizeCount, generatedList.length)}</p>
+          <div className="sticky top-0 z-20 bg-background pt-4 sm:top-16 sm:before:absolute sm:before:inset-x-0 sm:before:bottom-full sm:before:h-16 sm:before:bg-background">
+            <div className="h-2 rounded-t-md border-x border-t bg-muted" />
+          </div>
+          <div className="overflow-clip rounded-b-md border-x border-b">
+            <table className="w-full text-sm">
+              <thead className="sticky top-6 sm:top-22 z-10 bg-muted text-xs font-medium uppercase tracking-wide whitespace-nowrap text-muted-foreground">
                 <tr>
-                  <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                  <th className="w-px px-3 pb-2 text-center" scope="col">
                     Bib #
                   </th>
-                  <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                  <th className="w-1/2 px-3 pb-2 text-center" scope="col">
                     Prize
                   </th>
-                  <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                  <th className="w-px px-3 pb-2 text-center" scope="col">
                     Prize #
                   </th>
-                  <th className="w-1/4 px-4 py-2 text-left" scope="col">
+                  <th className="w-1/2 px-3 pb-2 text-center" scope="col">
                     Redeemed
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody>
                 {generatedList.map((entry, index) => (
                   <tr className={index % 2 === 0 ? "bg-background" : "bg-muted/40"} key={entry.position}>
-                    <td className="px-4 py-3 text-left font-mono">
+                    <td className="px-3 py-2.5 text-center font-mono">
                       {entry.bibNumber === null ? "-" : formatPaddedNumber(entry.bibNumber, highestBibNumber)}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2.5 text-center">
                       <StatusIcon status={entry.prizeType ? "check" : "minus"} />
                     </td>
-                    <td className="px-4 py-3 text-left font-mono">
+                    <td className="px-3 py-2.5 text-center font-mono">
                       {entry.prizeNumber === null ? "-" : formatPaddedNumber(entry.prizeNumber, totalPrizes)}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2.5 text-center">
                       {entry.bibNumber === null || !entry.prizeType ? (
                         <StatusIcon status="minus" />
                       ) : (
@@ -111,7 +114,7 @@ export function PrizeList({
               </tbody>
             </table>
           </div>
-        </>
+        </div>
       )}
     </section>
   );
