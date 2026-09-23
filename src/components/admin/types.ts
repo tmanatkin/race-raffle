@@ -43,5 +43,5 @@ export function formatTimestamp(timestamp: string | null) {
 export function formatPrizeListSummary(prizes: number, racers: number) {
   const racerLabel = racers === 1 ? "racer" : "racers";
   const prizeLabel = prizes === 1 ? "prize" : "prizes";
-  return `${racers} ${racerLabel}, ${prizes} ${prizeLabel}`;
+  return `${racers} ${racerLabel} - ${prizes} ${prizeLabel}`;
 }
