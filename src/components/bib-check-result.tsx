@@ -41,7 +41,7 @@ export function BibCheckResult({
       <div className="flex flex-wrap items-center gap-3">
         {actions}
         <Button disabled={isCheckAnotherDisabled} onClick={onCheckAnotherBibNumber} type="button" variant="outline">
-          Check another bib number
+          Check another bib
         </Button>
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}

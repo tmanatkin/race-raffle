@@ -23,7 +23,7 @@ export function BibCardResult({ bibNumber, highestBibNumber, onCheckAnotherBibNu
         type="button"
         variant="outline"
       >
-        Check another bib number
+        Check another bib
       </Button>
     </div>
   );
