@@ -3,6 +3,7 @@
 import { SubmitEvent, useEffect, useState } from "react";
 import { BibCardForm } from "@/components/bib-card-form";
 import { BibCardResult } from "@/components/bib-card-result";
+import { CheckeredStripe } from "@/components/checkered-stripe";
 
 type CheckStatus = "no_prize" | "unredeemed" | "already_redeemed";
 
@@ -171,16 +172,20 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen items-start justify-center p-8">
+    <main className="flex min-h-dvh items-center justify-center p-8">
       <div className="@container w-full max-w-sm space-y-8">
-        <div className="space-y-3">
-          <h1 className="text-center text-[30cqi] leading-[0.85] font-bold font-stretch-[25%] uppercase [font-style:oblique_10deg]">
-            {heading.headline}
-          </h1>
-          <p className="text-center text-[8cqi] font-medium font-stretch-50% tracking-wide text-balance">
-            {heading.subheading}
-          </p>
+        <div className="space-y-5">
+          <div className="space-y-3">
+            <h1 className="text-center text-[30cqi] leading-[0.85] font-bold font-stretch-[25%] uppercase [font-style:oblique_10deg]">
+              {heading.headline}
+            </h1>
+            <p className="text-center text-[8cqi] font-medium font-stretch-50% tracking-wide text-balance">
+              {heading.subheading}
+            </p>
+          </div>
         </div>
+        <CheckeredStripe />
+
         {status === null ? (
           <BibCardForm
             bibNumber={bibNumber}
