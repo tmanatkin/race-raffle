@@ -54,7 +54,9 @@ export function BibNumberRangeForm({
             <Label htmlFor="lowest-bib-number">Lowest</Label>
             <Input
               id="lowest-bib-number"
+              autoComplete="off"
               disabled={isLoading || isSaving || isSavingBib}
+              inputMode="numeric"
               min="0"
               onChange={(event) => onChange("lowestBibNumber", event.target.value)}
               placeholder={isLoading ? "-" : undefined}
@@ -67,7 +69,9 @@ export function BibNumberRangeForm({
             <Label htmlFor="highest-bib-number">Highest</Label>
             <Input
               id="highest-bib-number"
+              autoComplete="off"
               disabled={isLoading || isSaving || isSavingBib}
+              inputMode="numeric"
               min="0"
               onChange={(event) => onChange("highestBibNumber", event.target.value)}
               placeholder={isLoading ? "-" : undefined}

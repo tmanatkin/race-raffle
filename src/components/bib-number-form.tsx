@@ -34,6 +34,8 @@ export function BibNumberForm({
         <Label htmlFor="race-bib-number">{label}</Label>
         <Input
           id="race-bib-number"
+          autoComplete="off"
+          inputMode="numeric"
           min="0"
           name="raceBibNumber"
           onChange={(event) => onBibNumberChange(event.target.value === "" ? "" : Number(event.target.value))}

@@ -66,7 +66,9 @@ export function PrizeListGeneratorForm({
           <Label htmlFor="prizes">Total number of prizes</Label>
           <Input
             id="prizes"
+            autoComplete="off"
             disabled={isLoading || isGeneratingList}
+            inputMode="numeric"
             min="0"
             onChange={(event) => onChange("prizes", event.target.value)}
             placeholder={isLoading ? "-" : undefined}
@@ -79,7 +81,9 @@ export function PrizeListGeneratorForm({
           <Label htmlFor="racers">Total number of people racing</Label>
           <Input
             id="racers"
+            autoComplete="off"
             disabled={isLoading || isGeneratingList}
+            inputMode="numeric"
             min="0"
             onChange={(event) => onChange("racers", event.target.value)}
             placeholder={isLoading ? "-" : undefined}

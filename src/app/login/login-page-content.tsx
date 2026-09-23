@@ -97,6 +97,7 @@ export function LoginPageContent({ currentRole }: { currentRole: Role | null }) 
                 <Label htmlFor="login-password">Password</Label>
                 <div className="relative">
                   <Input
+                    autoComplete="current-password"
                     autoFocus
                     className="pr-16"
                     disabled={isSubmitting}
