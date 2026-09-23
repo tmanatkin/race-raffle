@@ -427,7 +427,7 @@ function AdminPageContent() {
   return (
     <main className="p-8">
       <div className="mx-auto w-full max-w-2xl space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Admin</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-primary">Admin</h1>
 
         <Tabs className="space-y-8" onValueChange={changeTab} value={activeTab}>
           <TabsList>

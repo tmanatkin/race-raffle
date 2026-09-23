@@ -6,7 +6,7 @@ export function CheckeredStripe() {
   return (
     <svg
       aria-hidden="true"
-      className="block h-[5cqi] w-full text-foreground"
+      className="block h-[5cqi] w-full text-primary"
       preserveAspectRatio="none"
       shapeRendering="crispEdges"
       viewBox={`0 0 ${COLUMN_COUNT} 2`}

@@ -176,7 +176,7 @@ export default function Home() {
       <div className="@container w-full max-w-sm space-y-8">
         <div className="space-y-5">
           <div className="space-y-3">
-            <h1 className="text-center text-[30cqi] leading-[0.85] font-bold font-stretch-[25%] uppercase [font-style:oblique_10deg]">
+            <h1 className="text-center text-[30cqi] leading-[0.85] font-bold font-stretch-[25%] text-primary uppercase [font-style:oblique_10deg]">
               {heading.headline}
             </h1>
             <p className="text-center text-[8cqi] font-medium font-stretch-50% tracking-wide text-balance">
