@@ -4,6 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Role } from "@/lib/auth/session";
@@ -12,6 +21,7 @@ export function RoleNav({ role }: { role: Role }) {
   const router = useRouter();
   const pathname = usePathname();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   async function handleLogout() {
     setIsLoggingOut(true);
@@ -48,10 +58,28 @@ export function RoleNav({ role }: { role: Role }) {
           </Link>
         </nav>
       ) : null}
-      <Button variant="ghost" size="sm" onClick={handleLogout} disabled={isLoggingOut}>
-        <LogOut />
-        Log out
-      </Button>
+      <AlertDialog onOpenChange={setIsConfirmOpen} open={isConfirmOpen}>
+        <Button variant="ghost" size="sm" onClick={() => setIsConfirmOpen(true)} disabled={isLoggingOut}>
+          <LogOut />
+          Log out
+        </Button>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Log out?</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setIsConfirmOpen(false);
+                handleLogout();
+              }}
+            >
+              Log out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
