@@ -1,4 +1,14 @@
 import { SubmitEvent } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +17,7 @@ import { GeneratorValues, formatTimestamp } from "@/components/admin/types";
 type BibNumberRangeFormProps = {
   values: Pick<GeneratorValues, "lowestBibNumber" | "highestBibNumber">;
   hasChanges: boolean;
+  isConfirmOpen: boolean;
   isLoading: boolean;
   isSaving: boolean;
   isSavingBib: boolean;
@@ -14,12 +25,15 @@ type BibNumberRangeFormProps = {
   error: string;
   loadError: string;
   onChange: (field: "lowestBibNumber" | "highestBibNumber", value: string) => void;
+  onConfirm: () => void;
+  onConfirmOpenChange: (open: boolean) => void;
   onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
 };
 
 export function BibNumberRangeForm({
   values,
   hasChanges,
+  isConfirmOpen,
   isLoading,
   isSaving,
   isSavingBib,
@@ -27,6 +41,8 @@ export function BibNumberRangeForm({
   error,
   loadError,
   onChange,
+  onConfirm,
+  onConfirmOpenChange,
   onSubmit,
 }: BibNumberRangeFormProps) {
   if (!isLoading && loadError) {
@@ -96,6 +112,21 @@ export function BibNumberRangeForm({
         </div>
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
       </section>
+      <AlertDialog onOpenChange={onConfirmOpenChange} open={isConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Racers have already started checking their bib numbers. Changing the bib number range may prevent some
+              racers from checking their results or being looked up by volunteers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={onConfirm}>Save</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </form>
   );
 }

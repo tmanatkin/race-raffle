@@ -106,6 +106,7 @@ function AdminPageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingBib, setIsSavingBib] = useState(false);
+  const [isBibConfirmOpen, setIsBibConfirmOpen] = useState(false);
   const [qrScanStats, setQrScanStats] = useState<QrScanStatsData | null>(null);
   const [qrScanLoadError, setQrScanLoadError] = useState("");
   const [qrScanResetError, setQrScanResetError] = useState("");
@@ -285,8 +286,7 @@ function AdminPageContent() {
     }
   }
 
-  async function saveBibNumberRange(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function validateBibNumberRange(): { lowestBibNumber: number; highestBibNumber: number } | null {
     const lowestBibNumber = values.lowestBibNumber;
     const highestBibNumber = values.highestBibNumber;
 
@@ -299,11 +299,56 @@ function AdminPageContent() {
       highestBibNumber < 0
     ) {
       setBibError("The bib number range must be whole numbers of at least 0.");
-      return;
+      return null;
     }
 
     if (lowestBibNumber > highestBibNumber) {
       setBibError("The lowest bib number cannot be greater than the highest.");
+      return null;
+    }
+
+    return { lowestBibNumber, highestBibNumber };
+  }
+
+  // Fetches the latest list rather than using the loaded one, since the admin page may have been
+  // open since before any racers checked in.
+  async function hasCheckedInBibs() {
+    const response = await fetch("/api/admin/raffle-entries");
+    if (!response.ok) {
+      throw new Error("Unable to check whether any bib numbers have been entered.");
+    }
+
+    const result = (await response.json()) as { entries: RaffleListEntry[] };
+    return result.entries.some((entry) => entry.bibNumber !== null);
+  }
+
+  async function submitBibNumberRange(lowestBibNumber: number, highestBibNumber: number) {
+    const response = await fetch("/api/admin/raffle-entries", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lowestBibNumber, highestBibNumber }),
+    });
+
+    if (!response.ok) {
+      const result = (await response.json()) as { error?: string };
+      throw new Error(result.error ?? "Unable to save the bib number range.");
+    }
+
+    const result = (await response.json()) as { bibLastSavedAt: string | null };
+    setTimestamps((currentTimestamps) =>
+      currentTimestamps ? { ...currentTimestamps, bibLastSavedAt: result.bibLastSavedAt } : null
+    );
+    setSavedValues((currentValues) =>
+      currentValues
+        ? { ...currentValues, lowestBibNumber, highestBibNumber }
+        : { prizes: "", racers: "", lowestBibNumber, highestBibNumber }
+    );
+  }
+
+  async function saveBibNumberRange(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const range = validateBibNumberRange();
+    if (range === null) {
       return;
     }
 
@@ -311,26 +356,32 @@ function AdminPageContent() {
     setBibError("");
 
     try {
-      const response = await fetch("/api/admin/raffle-entries", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lowestBibNumber, highestBibNumber }),
-      });
-
-      if (!response.ok) {
-        const result = (await response.json()) as { error?: string };
-        throw new Error(result.error ?? "Unable to save the bib number range.");
+      // Once racers have started checking in, changing the range needs a confirmation first.
+      if (await hasCheckedInBibs()) {
+        setIsBibConfirmOpen(true);
+        return;
       }
 
-      const result = (await response.json()) as { bibLastSavedAt: string | null };
-      setTimestamps((currentTimestamps) =>
-        currentTimestamps ? { ...currentTimestamps, bibLastSavedAt: result.bibLastSavedAt } : null
-      );
-      setSavedValues((currentValues) =>
-        currentValues
-          ? { ...currentValues, lowestBibNumber, highestBibNumber }
-          : { prizes: "", racers: "", lowestBibNumber, highestBibNumber }
-      );
+      await submitBibNumberRange(range.lowestBibNumber, range.highestBibNumber);
+    } catch (saveError) {
+      setBibError(saveError instanceof Error ? saveError.message : "Unable to save the bib number range.");
+    } finally {
+      setIsSavingBib(false);
+    }
+  }
+
+  async function confirmSaveBibNumberRange() {
+    setIsBibConfirmOpen(false);
+    const range = validateBibNumberRange();
+    if (range === null) {
+      return;
+    }
+
+    setIsSavingBib(true);
+    setBibError("");
+
+    try {
+      await submitBibNumberRange(range.lowestBibNumber, range.highestBibNumber);
     } catch (saveError) {
       setBibError(saveError instanceof Error ? saveError.message : "Unable to save the bib number range.");
     } finally {
@@ -390,11 +441,14 @@ function AdminPageContent() {
               bibLastSavedAt={timestamps?.bibLastSavedAt ?? null}
               error={bibError}
               hasChanges={hasBibNumberChanges}
+              isConfirmOpen={isBibConfirmOpen}
               isLoading={isLoading}
               isSaving={isSaving}
               isSavingBib={isSavingBib}
               loadError={loadError}
               onChange={updateValue}
+              onConfirm={confirmSaveBibNumberRange}
+              onConfirmOpenChange={setIsBibConfirmOpen}
               onSubmit={saveBibNumberRange}
               values={values}
             />
