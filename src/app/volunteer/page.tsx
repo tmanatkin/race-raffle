@@ -3,6 +3,7 @@
 import { SubmitEvent, useEffect, useState } from "react";
 import { BibNumberForm } from "@/components/bib-number-form";
 import { BibCheckResult } from "@/components/bib-check-result";
+import { formatPaddedNumber } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,6 +41,7 @@ export default function VolunteerPage() {
   const [highestBibNumber, setHighestBibNumber] = useState<number | null>(null);
   const [totalPrizes, setTotalPrizes] = useState<number | null>(null);
   const [notCheckedBibNumber, setNotCheckedBibNumber] = useState<number | null>(null);
+  const [isNotCheckedDialogOpen, setIsNotCheckedDialogOpen] = useState(false);
 
   useEffect(() => {
     let isCurrent = true;
@@ -120,6 +122,7 @@ export default function VolunteerPage() {
       if (!ok) {
         if (result.status === "not_checked") {
           setNotCheckedBibNumber(bibNumber);
+          setIsNotCheckedDialogOpen(true);
           return;
         }
 
@@ -143,7 +146,7 @@ export default function VolunteerPage() {
       return;
     }
 
-    setNotCheckedBibNumber(null);
+    setIsNotCheckedDialogOpen(false);
     setError("");
     setIsSubmitting(true);
 
@@ -214,17 +217,18 @@ export default function VolunteerPage() {
         />
       )}
 
-      <AlertDialog
-        onOpenChange={(open) => {
-          if (!open) {
-            setNotCheckedBibNumber(null);
-          }
-        }}
-        open={notCheckedBibNumber !== null}
-      >
+      <AlertDialog onOpenChange={setIsNotCheckedDialogOpen} open={isNotCheckedDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Racer has not checked bib number for a prize.</AlertDialogTitle>
+            <AlertDialogTitle>
+              {notCheckedBibNumber !== null && highestBibNumber !== null ? (
+                <>
+                  Bib #
+                  <span className="font-mono">{formatPaddedNumber(notCheckedBibNumber, highestBibNumber)}</span>{" "}
+                  has not been checked for a prize.
+                </>
+              ) : null}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               This racer has not checked if they have won a prize yet. Would you like to check for them?
             </AlertDialogDescription>
