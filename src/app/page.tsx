@@ -41,6 +41,12 @@ const MINIMUM_RESULT_DELAY_MS = 1000;
 const CONFETTI_WHITE = "#ffffff";
 const CONFETTI_GOLD = "#fbbf24";
 
+const CONFETTI_SHARED_OPTIONS: confetti.Options = {
+  colors: [CONFETTI_WHITE, CONFETTI_GOLD],
+  shapes: ["square"],
+  disableForReducedMotion: true,
+};
+
 function wait(milliseconds: number) {
   return new Promise<void>((resolve) => {
     setTimeout(resolve, milliseconds);
@@ -169,12 +175,24 @@ export default function Home() {
     }
 
     void confetti({
+      ...CONFETTI_SHARED_OPTIONS,
       particleCount: 100,
       spread: 70,
       origin: { y: 1.1 },
-      colors: [CONFETTI_WHITE, CONFETTI_GOLD],
-      shapes: ["square"],
-      disableForReducedMotion: true,
+    });
+    void confetti({
+      ...CONFETTI_SHARED_OPTIONS,
+      particleCount: 50,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.5 },
+    });
+    void confetti({
+      ...CONFETTI_SHARED_OPTIONS,
+      particleCount: 50,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.5 },
     });
   }, [isWinner]);
 
