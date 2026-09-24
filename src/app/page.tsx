@@ -207,8 +207,8 @@ export default function Home() {
   }
 
   return (
-    <main className={cn("flex min-h-dvh items-center justify-center p-8", isWinner && "bg-primary")}>
-      <div className="@container w-full max-w-sm space-y-8">
+    <main className={cn("flex min-h-dvh items-center justify-center px-8 py-6", isWinner && "bg-primary")}>
+      <div className="@container w-full max-w-sm space-y-6">
         <div className={cn("space-y-5", isWinner && "text-primary-foreground")}>
           <div className="space-y-3">
             <h1
