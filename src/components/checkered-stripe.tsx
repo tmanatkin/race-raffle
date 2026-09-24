@@ -13,9 +13,10 @@ const COLUMNS = Array.from({ length: COLUMN_COUNT + PATTERN_WIDTH }, (_, index) 
 
 type CheckeredStripeProps = {
   isAnimating?: boolean;
+  className?: string;
 };
 
-export function CheckeredStripe({ isAnimating = false }: CheckeredStripeProps) {
+export function CheckeredStripe({ isAnimating = false, className }: CheckeredStripeProps) {
   const animationRef = useRef<SVGAnimateTransformElement>(null);
 
   // SVG animations are timed from page load, so one added later would start partway through its loop.
@@ -29,7 +30,7 @@ export function CheckeredStripe({ isAnimating = false }: CheckeredStripeProps) {
   return (
     <svg
       aria-hidden="true"
-      className={cn("block aspect-20/1 w-full", isAnimating ? "text-muted-foreground" : "text-primary")}
+      className={cn("block aspect-20/1 w-full", isAnimating ? "text-muted-foreground" : "text-primary", className)}
       preserveAspectRatio="none"
       shapeRendering="crispEdges"
       viewBox={`0 0 ${COLUMN_COUNT} 2`}

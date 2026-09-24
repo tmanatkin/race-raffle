@@ -1,30 +1,30 @@
 import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 export const BIB_NUMBER_CLASS_NAME = "text-[44cqi] leading-[normal] font-bold font-stretch-[25%] md:text-[44cqi]";
 
 type BibCardProps = {
   children: ReactNode;
+  isOnPrimaryBackground?: boolean;
 };
 
-export function BibCard({ children }: BibCardProps) {
+export function BibCard({ children, isOnPrimaryBackground = false }: BibCardProps) {
+  const holeClassName = cn(
+    "absolute size-3 rounded-full border-2",
+    isOnPrimaryBackground ? "border-transparent bg-primary" : "border-foreground bg-background"
+  );
+
   return (
-    <div className="relative flex flex-col items-center gap-1.5 rounded-xl border-2 border-foreground px-6 pt-7 pb-4 focus-within:ring-3 focus-within:ring-ring/50">
-      <span
-        aria-hidden="true"
-        className="absolute top-2.5 left-2.5 size-3 rounded-full border-2 border-foreground bg-background"
-      />
-      <span
-        aria-hidden="true"
-        className="absolute top-2.5 right-2.5 size-3 rounded-full border-2 border-foreground bg-background"
-      />
-      <span
-        aria-hidden="true"
-        className="absolute bottom-2.5 left-2.5 size-3 rounded-full border-2 border-foreground bg-background"
-      />
-      <span
-        aria-hidden="true"
-        className="absolute right-2.5 bottom-2.5 size-3 rounded-full border-2 border-foreground bg-background"
-      />
+    <div
+      className={cn(
+        "relative flex flex-col items-center gap-1.5 rounded-xl border-2 bg-background px-6 pt-7 pb-4 focus-within:ring-3 focus-within:ring-ring/50",
+        isOnPrimaryBackground ? "border-transparent" : "border-foreground"
+      )}
+    >
+      <span aria-hidden="true" className={cn(holeClassName, "top-2.5 left-2.5")} />
+      <span aria-hidden="true" className={cn(holeClassName, "top-2.5 right-2.5")} />
+      <span aria-hidden="true" className={cn(holeClassName, "bottom-2.5 left-2.5")} />
+      <span aria-hidden="true" className={cn(holeClassName, "right-2.5 bottom-2.5")} />
       {children}
     </div>
   );

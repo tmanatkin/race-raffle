@@ -30,7 +30,7 @@ const HEADING: Record<HeadingKey, Heading> = {
     subheading: "Bring your bib to the prize table.",
   },
   already_redeemed: {
-    headline: "Already claimed!",
+    headline: "Already claimed.",
     subheading: "Your prize has been picked up.",
   },
 };
@@ -157,6 +157,7 @@ export default function Home() {
           : "no_prize";
 
   const heading = status === null ? HEADING.unchecked : HEADING[status];
+  const isWinner = status === "unredeemed";
 
   if (isLoading || !isFontReady) {
     return (
@@ -169,14 +170,14 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center p-8">
+    <main className={cn("flex min-h-dvh items-center justify-center p-8", isWinner && "bg-primary")}>
       <div className="@container w-full max-w-sm space-y-8">
-        <div className="space-y-5">
+        <div className={cn("space-y-5", isWinner && "text-primary-foreground")}>
           <div className="space-y-3">
             <h1
               className={cn(
                 "text-center text-[30cqi] leading-[0.85] font-bold font-stretch-[25%] uppercase [font-style:oblique_10deg]",
-                isSubmitting ? "text-muted-foreground" : "text-primary"
+                isSubmitting ? "text-muted-foreground" : isWinner ? "text-primary-foreground" : "text-primary"
               )}
             >
               {heading.headline}
@@ -186,7 +187,7 @@ export default function Home() {
             </p>
           </div>
         </div>
-        <CheckeredStripe isAnimating={isSubmitting} />
+        <CheckeredStripe isAnimating={isSubmitting} className={isWinner ? "text-primary-foreground" : undefined} />
 
         {status === null ? (
           <BibCardForm
@@ -202,6 +203,7 @@ export default function Home() {
             bibNumber={checkedBibNumber}
             highestBibNumber={highestBibNumber ?? checkedBibNumber}
             onCheckAnotherBibNumber={checkAnotherBibNumber}
+            isOnPrimaryBackground={isWinner}
           />
         ) : null}
       </div>

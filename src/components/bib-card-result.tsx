@@ -8,12 +8,18 @@ type BibCardResultProps = {
   bibNumber: number;
   highestBibNumber: number;
   onCheckAnotherBibNumber: () => void;
+  isOnPrimaryBackground?: boolean;
 };
 
-export function BibCardResult({ bibNumber, highestBibNumber, onCheckAnotherBibNumber }: BibCardResultProps) {
+export function BibCardResult({
+  bibNumber,
+  highestBibNumber,
+  onCheckAnotherBibNumber,
+  isOnPrimaryBackground = false,
+}: BibCardResultProps) {
   return (
     <div className="w-full space-y-4">
-      <BibCard>
+      <BibCard isOnPrimaryBackground={isOnPrimaryBackground}>
         <p className="text-center text-sm leading-none font-bold tracking-widest uppercase">Bib number</p>
         <p className={BIB_NUMBER_CLASS_NAME}>{formatPaddedNumber(bibNumber, highestBibNumber)}</p>
       </BibCard>
