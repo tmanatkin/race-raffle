@@ -4,6 +4,7 @@ import { SubmitEvent, useEffect, useState } from "react";
 import { BibCardForm } from "@/components/bib-card-form";
 import { BibCardResult } from "@/components/bib-card-result";
 import { CheckeredStripe } from "@/components/checkered-stripe";
+import { cn } from "@/lib/utils";
 import { useIsFontReady } from "@/lib/use-is-font-ready";
 
 type CheckStatus = "no_prize" | "unredeemed" | "already_redeemed";
@@ -33,6 +34,14 @@ const HEADING: Record<HeadingKey, Heading> = {
     subheading: "Your prize has been picked up.",
   },
 };
+
+const MINIMUM_RESULT_DELAY_MS = 1000;
+
+function wait(milliseconds: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
 
 export default function Home() {
   const [bibNumber, setBibNumber] = useState<number | "">("");
@@ -92,6 +101,7 @@ export default function Home() {
     }
 
     setIsSubmitting(true);
+    const submitStartedAt = Date.now();
 
     try {
       const response = await fetch("/api/bib-checks", {
@@ -110,6 +120,13 @@ export default function Home() {
 
       if (!response.ok) {
         throw new Error(result.error ?? "Unable to check bib number.");
+      }
+
+      // Hold successful results so a fast response doesn't swap the page before the racer notices.
+      // Errors skip this and show right away.
+      const elapsedMs = Date.now() - submitStartedAt;
+      if (elapsedMs < MINIMUM_RESULT_DELAY_MS) {
+        await wait(MINIMUM_RESULT_DELAY_MS - elapsedMs);
       }
 
       setCheckedBibNumber(result.bibNumber ?? null);
@@ -156,7 +173,12 @@ export default function Home() {
       <div className="@container w-full max-w-sm space-y-8">
         <div className="space-y-5">
           <div className="space-y-3">
-            <h1 className="text-center text-[30cqi] leading-[0.85] font-bold font-stretch-[25%] text-primary uppercase [font-style:oblique_10deg]">
+            <h1
+              className={cn(
+                "text-center text-[30cqi] leading-[0.85] font-bold font-stretch-[25%] uppercase [font-style:oblique_10deg]",
+                isSubmitting ? "text-muted-foreground" : "text-primary"
+              )}
+            >
               {heading.headline}
             </h1>
             <p className="text-center text-[8cqi] font-medium font-stretch-50% tracking-wide text-balance">
@@ -164,7 +186,7 @@ export default function Home() {
             </p>
           </div>
         </div>
-        <CheckeredStripe />
+        <CheckeredStripe isAnimating={isSubmitting} />
 
         {status === null ? (
           <BibCardForm
