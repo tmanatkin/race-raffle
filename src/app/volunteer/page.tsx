@@ -68,7 +68,7 @@ const HEADING: Record<HeadingKey, Heading> = {
   already_redeemed: {
     headline: "Picked up",
     subheading: "This prize has already been claimed.",
-    className: "text-destructive",
+    className: "text-destructive/90",
   },
   no_prize: {
     headline: "No prize",
@@ -402,28 +402,25 @@ export default function VolunteerPage() {
             bibNumber={resultBibNumber}
             highestBibNumber={highestBibNumber ?? resultBibNumber}
             onCheckAnotherBibNumber={requestCheckAnotherBibNumber}
-            primaryAction={
+            action={
               resultStatus === "unredeemed" ? (
                 <Button
-                  className="h-14 w-full rounded-xl text-lg font-bold"
+                  className="h-14 w-full rounded-xl text-base leading-tight font-bold whitespace-normal"
                   disabled={isRedeeming}
                   onClick={redeemPrize}
                   type="button"
                 >
-                  {isRedeeming ? "Redeeming..." : "Mark as redeemed"}
+                  {isRedeeming ? "Redeeming..." : "Redeem"}
                 </Button>
-              ) : null
-            }
-            secondaryAction={
-              resultStatus === "redeemed" || resultStatus === "already_redeemed" ? (
+              ) : resultStatus === "redeemed" || resultStatus === "already_redeemed" ? (
                 <Button
-                  className="h-14 w-full rounded-xl text-base font-bold"
+                  className="h-14 w-full rounded-xl bg-destructive/90 text-base leading-tight font-bold whitespace-normal text-white hover:bg-destructive/70"
                   disabled={isUndoing}
                   onClick={() => setIsUndoConfirmOpen(true)}
                   type="button"
                   variant="destructive"
                 >
-                  {isUndoing ? "Undoing..." : "Undo redemption"}
+                  {isUndoing ? "Undoing..." : "Unredeem"}
                 </Button>
               ) : null
             }
@@ -533,7 +530,7 @@ export default function VolunteerPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Go back</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={checkAnotherBibNumber}>Leave without redeeming</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -9,8 +9,7 @@ type BibCheckResultProps = {
   bibNumber: number;
   highestBibNumber: number;
   onCheckAnotherBibNumber: () => void;
-  primaryAction?: ReactNode;
-  secondaryAction?: ReactNode;
+  action?: ReactNode;
   isCheckAnotherDisabled?: boolean;
   error?: string;
 };
@@ -19,8 +18,7 @@ export function BibCheckResult({
   bibNumber,
   highestBibNumber,
   onCheckAnotherBibNumber,
-  primaryAction,
-  secondaryAction,
+  action,
   isCheckAnotherDisabled = false,
   error,
 }: BibCheckResultProps) {
@@ -30,17 +28,18 @@ export function BibCheckResult({
         <p className="text-center text-sm leading-none font-bold tracking-widest uppercase">Bib number</p>
         <p className={BIB_NUMBER_CLASS_NAME}>{formatPaddedNumber(bibNumber, highestBibNumber)}</p>
       </BibCard>
-      {primaryAction}
-      <Button
-        className={cn("w-full rounded-xl font-bold", primaryAction ? "h-12 text-base" : "h-14 text-lg")}
-        disabled={isCheckAnotherDisabled}
-        onClick={onCheckAnotherBibNumber}
-        type="button"
-        variant={primaryAction ? "outline" : "default"}
-      >
-        Check another bib
-      </Button>
-      {secondaryAction}
+      <div className={cn("grid gap-3", action ? "grid-cols-2" : "grid-cols-1")}>
+        <Button
+          className="h-14 w-full rounded-xl text-base leading-tight font-bold whitespace-normal"
+          disabled={isCheckAnotherDisabled}
+          onClick={onCheckAnotherBibNumber}
+          type="button"
+          variant="outline"
+        >
+          Check a bib
+        </Button>
+        {action}
+      </div>
       {error ? (
         <p
           role="alert"
