@@ -142,7 +142,7 @@ export function LoginPageContent({ currentRole }: { currentRole: Role | null }) 
                   </div>
                 </div>
               </div>
-              <Button disabled={isSubmitting || password.length === 0} type="submit">
+              <Button className="h-10 w-full" disabled={isSubmitting || password.length === 0} type="submit">
                 {isSubmitting ? "Logging in..." : "Log in"}
               </Button>
               {error ? <p className="text-center text-sm text-destructive">{error}</p> : null}

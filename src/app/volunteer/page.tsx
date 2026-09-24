@@ -414,7 +414,7 @@ export default function VolunteerPage() {
                 </Button>
               ) : resultStatus === "redeemed" || resultStatus === "already_redeemed" ? (
                 <Button
-                  className="h-14 w-full rounded-xl bg-destructive/90 text-base leading-tight font-bold whitespace-normal text-white hover:bg-destructive/70"
+                  className="h-14 w-full rounded-xl text-base leading-tight font-bold whitespace-normal"
                   disabled={isUndoing}
                   onClick={() => setIsUndoConfirmOpen(true)}
                   type="button"
@@ -456,8 +456,15 @@ export default function VolunteerPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={checkBibNumberForRacer}>Continue</AlertDialogAction>
+            <AlertDialogCancel className="h-14 w-full rounded-xl text-base leading-tight font-bold whitespace-normal sm:w-auto sm:flex-1">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="h-14 w-full rounded-xl text-base leading-tight font-bold whitespace-normal sm:w-auto sm:flex-1"
+              onClick={checkBibNumberForRacer}
+            >
+              Continue
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -492,8 +499,14 @@ export default function VolunteerPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={undoRedemption} variant="destructive">
+            <AlertDialogCancel className="h-14 w-full rounded-xl text-base leading-tight font-bold whitespace-normal sm:w-auto sm:flex-1">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="h-14 w-full rounded-xl text-base leading-tight font-bold whitespace-normal sm:w-auto sm:flex-1"
+              onClick={undoRedemption}
+              variant="destructive"
+            >
               Undo redemption
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -530,8 +543,15 @@ export default function VolunteerPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={checkAnotherBibNumber}>Leave without redeeming</AlertDialogAction>
+            <AlertDialogCancel className="h-14 w-full rounded-xl text-base leading-tight font-bold whitespace-normal sm:w-auto sm:flex-1">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="h-14 w-full rounded-xl text-base leading-tight font-bold whitespace-normal sm:w-auto sm:flex-1"
+              onClick={checkAnotherBibNumber}
+            >
+              Leave without redeeming
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

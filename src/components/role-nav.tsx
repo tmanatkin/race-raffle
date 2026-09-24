@@ -68,8 +68,11 @@ export function RoleNav({ role }: { role: Role }) {
             <AlertDialogTitle>Log out?</AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="h-14 w-full rounded-xl text-base leading-tight font-bold whitespace-normal">
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
+              className="h-14 w-full rounded-xl text-base leading-tight font-bold whitespace-normal"
               onClick={() => {
                 setIsConfirmOpen(false);
                 handleLogout();
