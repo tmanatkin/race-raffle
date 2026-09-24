@@ -1,6 +1,7 @@
 "use client";
 
 import { SubmitEvent, useEffect, useState } from "react";
+import confetti from "canvas-confetti";
 import { BibCardForm } from "@/components/bib-card-form";
 import { BibCardResult } from "@/components/bib-card-result";
 import { CheckeredStripe } from "@/components/checkered-stripe";
@@ -36,6 +37,9 @@ const HEADING: Record<HeadingKey, Heading> = {
 };
 
 const MINIMUM_RESULT_DELAY_MS = 1000;
+
+const CONFETTI_WHITE = "#ffffff";
+const CONFETTI_GOLD = "#fbbf24";
 
 function wait(milliseconds: number) {
   return new Promise<void>((resolve) => {
@@ -158,6 +162,21 @@ export default function Home() {
 
   const heading = status === null ? HEADING.unchecked : HEADING[status];
   const isWinner = status === "unredeemed";
+
+  useEffect(() => {
+    if (!isWinner) {
+      return;
+    }
+
+    void confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 1.1 },
+      colors: [CONFETTI_WHITE, CONFETTI_GOLD],
+      shapes: ["square"],
+      disableForReducedMotion: true,
+    });
+  }, [isWinner]);
 
   if (isLoading || !isFontReady) {
     return (
