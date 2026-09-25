@@ -197,7 +197,7 @@ export default function Home() {
 
   if (isLoading || !isFontReady) {
     return (
-      <main className="flex min-h-dvh items-center justify-center p-8">
+      <main className="flex items-start justify-center p-8">
         <div aria-busy="true" aria-label="Loading">
           <span className="block size-8 animate-spin rounded-full border-4 border-muted-foreground/30 border-t-muted-foreground" />
         </div>
@@ -206,7 +206,7 @@ export default function Home() {
   }
 
   return (
-    <main data-body-bg-primary={isWinner} className="flex min-h-dvh items-center justify-center px-8 py-4">
+    <main data-body-bg-primary={isWinner} className="flex items-start justify-center p-8">
       <div className="@container w-full max-w-sm space-y-4">
         <div className={cn("space-y-5", isWinner && "text-primary-foreground")}>
           <div className="space-y-3">
