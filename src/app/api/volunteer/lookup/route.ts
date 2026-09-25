@@ -10,7 +10,7 @@ export const GET = withErrorHandling(async (request: Request) => {
   const bibNumber = bibNumberParam === null || bibNumberParam === "" ? NaN : Number(bibNumberParam);
 
   if (!Number.isInteger(bibNumber)) {
-    return NextResponse.json({ error: "Enter a whole number." }, { status: 400 });
+    return NextResponse.json({ error: "Enter a bib number." }, { status: 400 });
   }
 
   const supabase = await createClient();
@@ -22,7 +22,7 @@ export const GET = withErrorHandling(async (request: Request) => {
 
   if (checkError) {
     console.error(checkError);
-    return NextResponse.json({ error: "Unable to look up bib number." }, { status: 500 });
+    return NextResponse.json({ error: "Couldn't look up bib. Try again." }, { status: 500 });
   }
 
   if (!check) {
@@ -39,7 +39,7 @@ export const GET = withErrorHandling(async (request: Request) => {
 
   if (entryError) {
     console.error(entryError);
-    return NextResponse.json({ error: "Unable to look up bib number." }, { status: 500 });
+    return NextResponse.json({ error: "Couldn't look up bib. Try again." }, { status: 500 });
   }
 
   let status: LookupStatus;

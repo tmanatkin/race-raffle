@@ -16,7 +16,7 @@ export const GET = withErrorHandling(async () => {
 
   if (generationError || settingsError) {
     console.error(generationError ?? settingsError);
-    return NextResponse.json({ error: "Unable to load raffle settings." }, { status: 500 });
+    return NextResponse.json({ error: "Couldn't load. Refresh the page." }, { status: 500 });
   }
 
   return NextResponse.json({

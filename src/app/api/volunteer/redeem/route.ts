@@ -20,7 +20,7 @@ export const POST = withErrorHandling(async (request: Request) => {
   }
 
   if (typeof bibNumber !== "number" || !Number.isInteger(bibNumber)) {
-    return NextResponse.json({ error: "Enter a whole number." }, { status: 400 });
+    return NextResponse.json({ error: "Enter a bib number." }, { status: 400 });
   }
 
   const supabase = await createClient();
@@ -31,7 +31,7 @@ export const POST = withErrorHandling(async (request: Request) => {
 
   if (redeemError || !redeem) {
     console.error(redeemError);
-    return NextResponse.json({ error: "Unable to redeem bib number." }, { status: 500 });
+    return NextResponse.json({ error: "Couldn't redeem. Try again." }, { status: 500 });
   }
 
   if (redeem.status === "not_checked") {

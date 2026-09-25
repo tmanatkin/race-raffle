@@ -6,7 +6,7 @@ export function withErrorHandling<Args extends unknown[]>(handler: (...args: Arg
       return await handler(...args);
     } catch (error) {
       console.error(error);
-      return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+      return NextResponse.json({ error: "Something went wrong. Try again." }, { status: 500 });
     }
   };
 }

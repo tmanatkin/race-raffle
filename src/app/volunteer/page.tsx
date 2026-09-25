@@ -5,6 +5,7 @@ import { BibCardForm } from "@/components/bib-card-form";
 import { BibCheckResult } from "@/components/bib-check-result";
 import { CheckeredStripe } from "@/components/checkered-stripe";
 import { Button } from "@/components/ui/button";
+import { fetchJson } from "@/lib/api/fetch-json";
 import { cn, formatPaddedNumber } from "@/lib/utils";
 import { useIsFontReady } from "@/lib/use-is-font-ready";
 import {
@@ -103,16 +104,15 @@ export default function VolunteerPage() {
 
     async function loadRaffleSettings() {
       try {
-        const response = await fetch("/api/raffle-settings");
-        const result = (await response.json()) as {
+        const { ok, result } = await fetchJson<{
           lowestBibNumber?: number;
           highestBibNumber?: number;
           prizes?: number;
           error?: string;
-        };
+        }>("/api/raffle-settings", "Couldn't load. Refresh the page.");
 
-        if (!response.ok || result.lowestBibNumber === undefined || result.highestBibNumber === undefined) {
-          throw new Error(result.error ?? "Unable to load raffle settings.");
+        if (!ok || result.lowestBibNumber === undefined || result.highestBibNumber === undefined) {
+          throw new Error(result.error ?? "Couldn't load. Refresh the page.");
         }
 
         if (!isCurrent) {
@@ -129,7 +129,7 @@ export default function VolunteerPage() {
 
         // The bib range is needed to validate lookups, so a failure is shown instead of letting every
         // lookup report "Invalid bib number."
-        setError(loadError instanceof Error ? loadError.message : "Unable to load raffle settings.");
+        setError(loadError instanceof Error ? loadError.message : "Couldn't load. Refresh the page.");
       } finally {
         if (isCurrent) {
           setIsLoading(false);
@@ -145,50 +145,23 @@ export default function VolunteerPage() {
   }, []);
 
   async function submitLookup(bib: number) {
-    const response = await fetch(`/api/volunteer/lookup?bibNumber=${bib}`);
-
-    let result: LookupResponse;
-    try {
-      result = (await response.json()) as LookupResponse;
-    } catch {
-      result = { error: "Unable to look up bib number." };
-    }
-
-    return { ok: response.ok, result };
+    return fetchJson<LookupResponse>(`/api/volunteer/lookup?bibNumber=${bib}`, "Couldn't look up bib. Try again.");
   }
 
   async function submitRedeem(bib: number) {
-    const response = await fetch("/api/volunteer/redeem", {
+    return fetchJson<RedeemResponse>("/api/volunteer/redeem", "Couldn't redeem. Try again.", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ bibNumber: bib }),
     });
-
-    let result: RedeemResponse;
-    try {
-      result = (await response.json()) as RedeemResponse;
-    } catch {
-      result = { error: "Unable to redeem prize." };
-    }
-
-    return { ok: response.ok, status: response.status, result };
   }
 
   async function submitUnredeem(bib: number) {
-    const response = await fetch("/api/volunteer/unredeem", {
+    return fetchJson<UnredeemResponse>("/api/volunteer/unredeem", "Couldn't undo. Try again.", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ bibNumber: bib }),
     });
-
-    let result: UnredeemResponse;
-    try {
-      result = (await response.json()) as UnredeemResponse;
-    } catch {
-      result = { error: "Unable to undo prize redemption." };
-    }
-
-    return { ok: response.ok, result };
   }
 
   function showResult(status: ResultStatus, bib: number, prizeNumber: number | null) {
@@ -204,17 +177,17 @@ export default function VolunteerPage() {
     event.preventDefault();
     setError("");
 
-    if (bibNumber === "" || !Number.isInteger(bibNumber)) {
-      setError("Enter a whole number.");
+    if (lowestBibNumber === null || highestBibNumber === null) {
+      setError("Couldn't load. Refresh the page.");
       return;
     }
 
-    if (
-      lowestBibNumber === null ||
-      highestBibNumber === null ||
-      bibNumber < lowestBibNumber ||
-      bibNumber > highestBibNumber
-    ) {
+    if (bibNumber === "" || !Number.isInteger(bibNumber)) {
+      setError("Enter a bib number.");
+      return;
+    }
+
+    if (bibNumber < lowestBibNumber || bibNumber > highestBibNumber) {
       setError("Invalid bib number.");
       return;
     }
@@ -225,7 +198,7 @@ export default function VolunteerPage() {
       const { ok, result } = await submitLookup(bibNumber);
 
       if (!ok || !result.status) {
-        throw new Error(result.error ?? "Unable to look up bib number.");
+        throw new Error(result.error ?? "Couldn't look up bib. Try again.");
       }
 
       if (result.status === "not_checked") {
@@ -236,7 +209,7 @@ export default function VolunteerPage() {
 
       showResult(result.status, result.bibNumber ?? bibNumber, result.prizeNumber ?? null);
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unable to look up bib number.");
+      setError(submitError instanceof Error ? submitError.message : "Couldn't look up bib. Try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -253,32 +226,29 @@ export default function VolunteerPage() {
     setIsSubmitting(true);
 
     try {
-      const checkResponse = await fetch("/api/bib-checks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bibNumber: bib }),
-      });
+      const { ok: isCheckOk, result: checkResult } = await fetchJson<{ error?: string }>(
+        "/api/bib-checks",
+        "Couldn't check bib. Try again.",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bibNumber: bib }),
+        }
+      );
 
-      let checkResult: { error?: string };
-      try {
-        checkResult = (await checkResponse.json()) as { error?: string };
-      } catch {
-        checkResult = { error: "Unable to check bib number." };
-      }
-
-      if (!checkResponse.ok) {
-        throw new Error(checkResult.error ?? "Unable to check bib number.");
+      if (!isCheckOk) {
+        throw new Error(checkResult.error ?? "Couldn't check bib. Try again.");
       }
 
       const { ok, result } = await submitLookup(bib);
 
       if (!ok || !result.status || result.status === "not_checked") {
-        throw new Error(result.error ?? "Unable to look up bib number.");
+        throw new Error(result.error ?? "Couldn't look up bib. Try again.");
       }
 
       showResult(result.status, result.bibNumber ?? bib, result.prizeNumber ?? null);
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unable to check bib number.");
+      setError(submitError instanceof Error ? submitError.message : "Couldn't check bib. Try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -296,14 +266,14 @@ export default function VolunteerPage() {
       const { ok, result } = await submitRedeem(resultBibNumber);
 
       if (!ok || !result.status || result.status === "not_checked") {
-        throw new Error(result.error ?? "Unable to redeem prize.");
+        throw new Error(result.error ?? "Couldn't redeem. Try again.");
       }
 
       setIsResultFromUndo(false);
       setResultStatus(result.status);
       setResultPrizeNumber(result.prizeNumber ?? null);
     } catch (submitError) {
-      setResultError(submitError instanceof Error ? submitError.message : "Unable to redeem prize.");
+      setResultError(submitError instanceof Error ? submitError.message : "Couldn't redeem. Try again.");
     } finally {
       setIsRedeeming(false);
     }
@@ -322,7 +292,7 @@ export default function VolunteerPage() {
       const { ok, result } = await submitUnredeem(resultBibNumber);
 
       if (!ok || !result.status || result.status === "not_checked") {
-        throw new Error(result.error ?? "Unable to undo prize redemption.");
+        throw new Error(result.error ?? "Couldn't undo. Try again.");
       }
 
       // "already_unredeemed" means another volunteer already undid it, so both land on the unredeemed screen.
@@ -330,7 +300,7 @@ export default function VolunteerPage() {
       setResultStatus(result.status === "no_prize" ? "no_prize" : "unredeemed");
       setResultPrizeNumber(result.prizeNumber ?? null);
     } catch (submitError) {
-      setResultError(submitError instanceof Error ? submitError.message : "Unable to undo prize redemption.");
+      setResultError(submitError instanceof Error ? submitError.message : "Couldn't undo. Try again.");
     } finally {
       setIsUndoing(false);
     }

@@ -6,9 +6,10 @@ export const BIB_NUMBER_CLASS_NAME = "text-[44cqi] leading-[1.1] font-bold font-
 type BibCardProps = {
   children: ReactNode;
   isOnPrimaryBackground?: boolean;
+  error?: string;
 };
 
-export function BibCard({ children, isOnPrimaryBackground = false }: BibCardProps) {
+export function BibCard({ children, isOnPrimaryBackground = false, error }: BibCardProps) {
   const holeClassName = cn(
     "absolute size-3 rounded-full border-2",
     isOnPrimaryBackground ? "border-transparent bg-primary" : "border-foreground bg-background"
@@ -26,6 +27,11 @@ export function BibCard({ children, isOnPrimaryBackground = false }: BibCardProp
       <span aria-hidden="true" className={cn(holeClassName, "bottom-2.5 left-2.5")} />
       <span aria-hidden="true" className={cn(holeClassName, "right-2.5 bottom-2.5")} />
       {children}
+      {error !== undefined ? (
+        <p role="alert" className="min-h-lh text-center text-sm leading-tight font-bold text-balance text-destructive">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

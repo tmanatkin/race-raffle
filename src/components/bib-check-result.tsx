@@ -24,7 +24,7 @@ export function BibCheckResult({
 }: BibCheckResultProps) {
   return (
     <div className="w-full space-y-4">
-      <BibCard>
+      <BibCard error={error}>
         <p className="text-center text-sm leading-none font-bold tracking-widest uppercase">Bib number</p>
         <p className={BIB_NUMBER_CLASS_NAME}>{formatPaddedNumber(bibNumber, highestBibNumber)}</p>
       </BibCard>
@@ -40,14 +40,6 @@ export function BibCheckResult({
         </Button>
         {action}
       </div>
-      {error ? (
-        <p
-          role="alert"
-          className="rounded-xl border-2 border-destructive bg-destructive/10 px-4 py-3 text-center text-lg leading-tight font-semibold text-balance text-destructive"
-        >
-          {error}
-        </p>
-      ) : null}
     </div>
   );
 }

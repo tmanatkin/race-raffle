@@ -28,7 +28,7 @@ export function BibCardForm({
 }: BibCardFormProps) {
   return (
     <form className="w-full space-y-4" onSubmit={onSubmit}>
-      <BibCard>
+      <BibCard error={error}>
         <Label htmlFor="race-bib-number" className="text-center font-bold tracking-widest uppercase">
           Bib number
         </Label>
@@ -54,14 +54,6 @@ export function BibCardForm({
       <Button className="h-14 w-full rounded-xl text-lg font-bold" disabled={isSubmitting} type="submit">
         {isSubmitting ? "Submitting..." : "Submit"}
       </Button>
-      {error ? (
-        <p
-          role="alert"
-          className="rounded-xl border-2 border-destructive bg-destructive/10 px-4 py-3 text-center text-lg leading-tight font-semibold text-balance text-destructive"
-        >
-          {error}
-        </p>
-      ) : null}
     </form>
   );
 }

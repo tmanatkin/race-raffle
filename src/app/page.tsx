@@ -5,6 +5,7 @@ import confetti from "canvas-confetti";
 import { BibCardForm } from "@/components/bib-card-form";
 import { BibCardResult } from "@/components/bib-card-result";
 import { CheckeredStripe } from "@/components/checkered-stripe";
+import { fetchJson } from "@/lib/api/fetch-json";
 import { cn } from "@/lib/utils";
 import { useIsFontReady } from "@/lib/use-is-font-ready";
 
@@ -68,21 +69,20 @@ export default function Home() {
   useEffect(() => {
     async function loadBibSettings() {
       try {
-        const response = await fetch("/api/raffle-settings");
-        const result = (await response.json()) as {
+        const { ok, result } = await fetchJson<{
           lowestBibNumber?: number;
           highestBibNumber?: number;
           error?: string;
-        };
+        }>("/api/raffle-settings", "Couldn't load. Refresh the page.");
 
-        if (!response.ok || result.lowestBibNumber === undefined || result.highestBibNumber === undefined) {
-          throw new Error(result.error ?? "Unable to load bib number settings.");
+        if (!ok || result.lowestBibNumber === undefined || result.highestBibNumber === undefined) {
+          throw new Error(result.error ?? "Couldn't load. Refresh the page.");
         }
 
         setLowestBibNumber(result.lowestBibNumber);
         setHighestBibNumber(result.highestBibNumber);
       } catch (loadError) {
-        setError(loadError instanceof Error ? loadError.message : "Unable to load bib number settings.");
+        setError(loadError instanceof Error ? loadError.message : "Couldn't load. Refresh the page.");
       } finally {
         setIsLoading(false);
       }
@@ -95,17 +95,17 @@ export default function Home() {
     event.preventDefault();
     setError("");
 
-    if (bibNumber === "" || !Number.isInteger(bibNumber)) {
-      setError("Enter a whole number.");
+    if (lowestBibNumber === null || highestBibNumber === null) {
+      setError("Couldn't load. Refresh the page.");
       return;
     }
 
-    if (
-      lowestBibNumber === null ||
-      highestBibNumber === null ||
-      bibNumber < lowestBibNumber ||
-      bibNumber > highestBibNumber
-    ) {
+    if (bibNumber === "" || !Number.isInteger(bibNumber)) {
+      setError("Enter a bib number.");
+      return;
+    }
+
+    if (bibNumber < lowestBibNumber || bibNumber > highestBibNumber) {
       setError("Invalid bib number.");
       return;
     }
@@ -114,22 +114,21 @@ export default function Home() {
     const submitStartedAt = Date.now();
 
     try {
-      const response = await fetch("/api/bib-checks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bibNumber }),
-      });
-      const result = (await response.json()) as {
+      const { ok, result } = await fetchJson<{
         error?: string;
         alreadyChecked?: boolean;
         bibNumber?: number;
         rafflePosition?: number;
         prizeType?: "prize" | null;
         redeemedAt?: string | null;
-      };
+      }>("/api/bib-checks", "Couldn't check bib. Try again.", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bibNumber }),
+      });
 
-      if (!response.ok) {
-        throw new Error(result.error ?? "Unable to check bib number.");
+      if (!ok) {
+        throw new Error(result.error ?? "Couldn't check bib. Try again.");
       }
 
       // Hold successful results so a fast response doesn't swap the page before the racer notices.
@@ -144,7 +143,7 @@ export default function Home() {
       setRedeemedAt(result.redeemedAt ?? null);
       setBibNumber("");
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unable to check bib number.");
+      setError(submitError instanceof Error ? submitError.message : "Couldn't check bib. Try again.");
     } finally {
       setIsSubmitting(false);
     }

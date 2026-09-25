@@ -36,7 +36,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (pathname.startsWith("/api/")) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ error: "Session expired. Log in again." }, { status: 401 });
   }
 
   const loginUrl = new URL("/login", request.url);
