@@ -55,7 +55,8 @@ export function PrizeListGeneratorForm({
     Number.isInteger(racers) &&
     racers >= 0;
   const hasMoreRacersThanBibs = hasValidCounts && bibRangeSize !== null && racers > bibRangeSize;
-  const hasMorePrizesThanRacers = hasValidCounts && prizes > racers;
+  const hasNoRacers = hasValidCounts && racers === 0;
+  const hasMorePrizesThanRacers = hasValidCounts && !hasNoRacers && prizes > racers;
 
   if (!isLoading && loadError) {
     return (
@@ -132,6 +133,9 @@ export function PrizeListGeneratorForm({
                     There are more racers than bib numbers in the saved bib range ({bibRangeSize}). Double-check the
                     racer count and bib range.
                   </p>
+                ) : null}
+                {hasNoRacers ? (
+                  <p className="text-sm font-medium text-amber-700">With 0 racers, the raffle will be closed.</p>
                 ) : null}
                 {hasMorePrizesThanRacers ? (
                   <p className="text-sm font-medium text-amber-700">
