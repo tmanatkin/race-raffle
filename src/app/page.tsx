@@ -197,7 +197,7 @@ export default function Home() {
 
   if (isLoading || !isFontReady) {
     return (
-      <main className="flex items-start justify-center p-8">
+      <main className="flex min-h-dvh items-center justify-center p-8">
         <div aria-busy="true" aria-label="Loading">
           <span className="block size-8 animate-spin rounded-full border-4 border-muted-foreground/30 border-t-muted-foreground" />
         </div>

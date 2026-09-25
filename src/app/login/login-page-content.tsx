@@ -74,7 +74,7 @@ export function LoginPageContent({ currentRole }: { currentRole: Role | null }) 
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center p-8">
+    <main className="flex items-start justify-center p-8">
       <div className="w-full max-w-sm space-y-6">
         <h1 className="text-2xl font-semibold tracking-tight text-primary">Log in</h1>
 

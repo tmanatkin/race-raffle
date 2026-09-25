@@ -7,9 +7,9 @@ export default async function VolunteerLayout({ children }: LayoutProps<"/volunt
   const session = await verifySessionCookieValue(cookieStore.get(SESSION_COOKIE_NAME)?.value);
 
   return (
-    <>
+    <div className="flex min-h-dvh flex-col">
       {session ? <RoleNav role={session.role} /> : null}
       {children}
-    </>
+    </div>
   );
 }
