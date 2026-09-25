@@ -123,6 +123,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  body:has(main[data-body-bg-primary="true"]) {
+    @apply bg-primary;
+  }
   html {
     @apply font-sans;
   }

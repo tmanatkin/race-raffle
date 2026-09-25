@@ -206,7 +206,7 @@ export default function Home() {
   }
 
   return (
-    <main className={cn("flex min-h-dvh items-center justify-center px-8 py-6", isWinner && "bg-primary")}>
+    <main data-body-bg-primary={isWinner} className="flex min-h-dvh items-center justify-center px-8 py-6">
       <div className="@container w-full max-w-sm space-y-6">
         <div className={cn("space-y-5", isWinner && "text-primary-foreground")}>
           <div className="space-y-3">
