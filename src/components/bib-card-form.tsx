@@ -36,6 +36,7 @@ export function BibCardForm({
           id="race-bib-number"
           autoComplete="off"
           autoFocus={autoFocus}
+          enterKeyHint="go"
           inputMode="numeric"
           min="0"
           name="raceBibNumber"
