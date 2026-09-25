@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export const BIB_NUMBER_CLASS_NAME = "mt-1 text-[44cqi] leading-[1.1] font-bold font-stretch-[25%] md:text-[44cqi]";
+export const BIB_NUMBER_CLASS_NAME =
+  "mt-1 h-[1.1em] text-[44cqi] leading-[1.1] font-bold font-stretch-[25%] md:text-[44cqi]";
 
 type BibCardProps = {
   children: ReactNode;

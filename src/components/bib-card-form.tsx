@@ -47,7 +47,7 @@ export function BibCardForm({
           disabled={isSubmitting}
           className={cn(
             BIB_NUMBER_CLASS_NAME,
-            "h-auto rounded-none border-0 p-0 text-center [appearance:textfield] placeholder:text-muted-foreground/40 focus-visible:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            "rounded-none border-0 p-0 text-center [appearance:textfield] placeholder:text-muted-foreground/40 focus-visible:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           )}
         />
       </BibCard>
