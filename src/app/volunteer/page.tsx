@@ -345,7 +345,7 @@ export default function VolunteerPage() {
     <main className="flex items-start justify-center p-8">
       <div className="@container w-full max-w-sm space-y-6">
         <div className="space-y-2">
-          <div className="flex items-end justify-between gap-4">
+          <div className="flex items-baseline-last justify-between gap-4">
             <div className="min-w-0 space-y-2">
               <p className="text-sm font-bold tracking-widest text-muted-foreground uppercase">Volunteer</p>
               <h1
@@ -355,9 +355,9 @@ export default function VolunteerPage() {
               </h1>
             </div>
             {displayedPrizeNumber !== null ? (
-              <div className="shrink-0 space-y-2 text-right">
+              <div className="shrink-0 text-right">
                 <p className="text-sm font-bold tracking-widest text-muted-foreground uppercase">Prize</p>
-                <p className="text-[14cqi] leading-[0.9] font-bold font-stretch-[25%]">
+                <p className="-mb-2 rounded-xl bg-primary px-3 py-2 text-[14cqi] leading-[0.9] font-bold font-stretch-[25%] text-white">
                   #{formatPaddedNumber(displayedPrizeNumber, totalPrizes ?? displayedPrizeNumber)}
                 </p>
               </div>
