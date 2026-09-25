@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export const BIB_NUMBER_CLASS_NAME = "text-[44cqi] leading-[1.1] font-bold font-stretch-[25%] md:text-[44cqi]";
+export const BIB_NUMBER_CLASS_NAME = "mt-1 text-[44cqi] leading-[1.1] font-bold font-stretch-[25%] md:text-[44cqi]";
 
 type BibCardProps = {
   children: ReactNode;
@@ -18,7 +18,7 @@ export function BibCard({ children, isOnPrimaryBackground = false, error }: BibC
   return (
     <div
       className={cn(
-        "relative flex flex-col items-center gap-1.5 rounded-xl border-2 bg-background px-6 pt-7 pb-4 focus-within:ring-3 focus-within:ring-ring/50",
+        "relative flex flex-col items-center rounded-xl border-2 bg-background px-6 pt-5 pb-4 focus-within:ring-3 focus-within:ring-ring/50",
         isOnPrimaryBackground ? "border-transparent" : "border-foreground"
       )}
     >

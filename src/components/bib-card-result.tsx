@@ -19,7 +19,7 @@ export function BibCardResult({
 }: BibCardResultProps) {
   return (
     <div className="w-full space-y-4">
-      <BibCard isOnPrimaryBackground={isOnPrimaryBackground}>
+      <BibCard isOnPrimaryBackground={isOnPrimaryBackground} error="">
         <p className="text-center text-sm leading-none font-bold tracking-widest uppercase">Bib number</p>
         <p className={BIB_NUMBER_CLASS_NAME}>{formatPaddedNumber(bibNumber, highestBibNumber)}</p>
       </BibCard>
