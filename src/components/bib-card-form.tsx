@@ -5,11 +5,10 @@ import { BIB_NUMBER_CLASS_NAME, BibCard } from "@/components/bib-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn, formatPaddedNumber } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 type BibCardFormProps = {
   bibNumber: number | "";
-  highestBibNumber: number;
   onBibNumberChange: (bibNumber: number | "") => void;
   onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
   isSubmitting: boolean;
@@ -19,7 +18,6 @@ type BibCardFormProps = {
 
 export function BibCardForm({
   bibNumber,
-  highestBibNumber,
   onBibNumberChange,
   onSubmit,
   isSubmitting,
@@ -41,7 +39,7 @@ export function BibCardForm({
           min="0"
           name="raceBibNumber"
           onChange={(event) => onBibNumberChange(event.target.value === "" ? "" : Number(event.target.value))}
-          placeholder={formatPaddedNumber(0, highestBibNumber)}
+          placeholder="000"
           step="1"
           type="number"
           value={bibNumber}

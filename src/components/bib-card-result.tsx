@@ -2,18 +2,15 @@
 
 import { BIB_NUMBER_CLASS_NAME, BibCard } from "@/components/bib-card";
 import { Button } from "@/components/ui/button";
-import { formatPaddedNumber } from "@/lib/utils";
 
 type BibCardResultProps = {
   bibNumber: number;
-  highestBibNumber: number;
   onCheckAnotherBibNumber: () => void;
   isOnPrimaryBackground?: boolean;
 };
 
 export function BibCardResult({
   bibNumber,
-  highestBibNumber,
   onCheckAnotherBibNumber,
   isOnPrimaryBackground = false,
 }: BibCardResultProps) {
@@ -21,7 +18,7 @@ export function BibCardResult({
     <div className="w-full space-y-4">
       <BibCard isOnPrimaryBackground={isOnPrimaryBackground} error="">
         <p className="text-center text-sm leading-none font-bold tracking-widest uppercase">Bib number</p>
-        <p className={BIB_NUMBER_CLASS_NAME}>{formatPaddedNumber(bibNumber, highestBibNumber)}</p>
+        <p className={BIB_NUMBER_CLASS_NAME}>{bibNumber}</p>
       </BibCard>
       <Button
         className="h-14 w-full rounded-xl text-lg font-bold"

@@ -3,11 +3,10 @@
 import { ReactNode } from "react";
 import { BIB_NUMBER_CLASS_NAME, BibCard } from "@/components/bib-card";
 import { Button } from "@/components/ui/button";
-import { cn, formatPaddedNumber } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 type BibCheckResultProps = {
   bibNumber: number;
-  highestBibNumber: number;
   onCheckAnotherBibNumber: () => void;
   action?: ReactNode;
   isCheckAnotherDisabled?: boolean;
@@ -16,7 +15,6 @@ type BibCheckResultProps = {
 
 export function BibCheckResult({
   bibNumber,
-  highestBibNumber,
   onCheckAnotherBibNumber,
   action,
   isCheckAnotherDisabled = false,
@@ -26,7 +24,7 @@ export function BibCheckResult({
     <div className="w-full space-y-4">
       <BibCard error={error}>
         <p className="text-center text-sm leading-none font-bold tracking-widest uppercase">Bib number</p>
-        <p className={BIB_NUMBER_CLASS_NAME}>{formatPaddedNumber(bibNumber, highestBibNumber)}</p>
+        <p className={BIB_NUMBER_CLASS_NAME}>{bibNumber}</p>
       </BibCard>
       <div className={cn("grid gap-3", action ? "grid-cols-2" : "grid-cols-1")}>
         <Button

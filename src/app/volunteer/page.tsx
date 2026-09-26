@@ -370,7 +370,6 @@ export default function VolunteerPage() {
         {resultStatus !== null && resultBibNumber !== null ? (
           <BibCheckResult
             bibNumber={resultBibNumber}
-            highestBibNumber={highestBibNumber ?? resultBibNumber}
             onCheckAnotherBibNumber={requestCheckAnotherBibNumber}
             action={
               resultStatus === "unredeemed" ? (
@@ -400,7 +399,6 @@ export default function VolunteerPage() {
         ) : (
           <BibCardForm
             bibNumber={bibNumber}
-            highestBibNumber={highestBibNumber ?? 0}
             onBibNumberChange={setBibNumber}
             onSubmit={lookUpBibNumber}
             isSubmitting={isSubmitting}
@@ -414,9 +412,9 @@ export default function VolunteerPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {notCheckedBibNumber !== null && highestBibNumber !== null ? (
+              {notCheckedBibNumber !== null ? (
                 <>
-                  Bib #<span className="font-mono">{formatPaddedNumber(notCheckedBibNumber, highestBibNumber)}</span>{" "}
+                  Bib #<span className="font-mono">{notCheckedBibNumber}</span>{" "}
                   has not been checked for a prize.
                 </>
               ) : null}
@@ -447,7 +445,7 @@ export default function VolunteerPage() {
                 <>
                   Undo redemption for Bib #
                   <span className="font-mono">
-                    {formatPaddedNumber(resultBibNumber, highestBibNumber ?? resultBibNumber)}
+                    {resultBibNumber}
                   </span>
                   ?
                 </>
@@ -491,7 +489,7 @@ export default function VolunteerPage() {
                 <>
                   Leave without redeeming Bib #
                   <span className="font-mono">
-                    {formatPaddedNumber(resultBibNumber, highestBibNumber ?? resultBibNumber)}
+                    {resultBibNumber}
                   </span>
                   ?
                 </>

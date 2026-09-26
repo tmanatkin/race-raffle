@@ -7,7 +7,6 @@ type PrizeListProps = {
   error: string;
   hasGeneratedGeneration: boolean;
   generatedList: RaffleListEntry[];
-  highestBibNumber: number;
   totalPrizes: number;
 };
 
@@ -40,7 +39,6 @@ export function PrizeList({
   error,
   hasGeneratedGeneration,
   generatedList,
-  highestBibNumber,
   totalPrizes,
 }: PrizeListProps) {
   const assignedPrizeCount = generatedList.filter((entry) => entry.prizeType === "prize").length;
@@ -78,7 +76,7 @@ export function PrizeList({
             <table className="w-full text-sm">
               <thead className="sticky top-6 lg:top-22 z-10 bg-muted text-xs font-medium uppercase tracking-wide whitespace-nowrap text-muted-foreground">
                 <tr>
-                  <th className="w-px px-3 pb-2 text-center" scope="col">
+                  <th className="w-px px-3 pb-2 text-right" scope="col">
                     Bib #
                   </th>
                   <th className="w-1/2 px-3 pb-2 text-center" scope="col">
@@ -95,8 +93,8 @@ export function PrizeList({
               <tbody>
                 {generatedList.map((entry, index) => (
                   <tr className={index % 2 === 0 ? "bg-background" : "bg-muted/40"} key={entry.position}>
-                    <td className="px-3 py-2.5 text-center font-mono">
-                      {entry.bibNumber === null ? "-" : formatPaddedNumber(entry.bibNumber, highestBibNumber)}
+                    <td className="px-3 py-2.5 text-right font-mono">
+                      {entry.bibNumber === null ? "-" : entry.bibNumber}
                     </td>
                     <td className="px-3 py-2.5 text-center">
                       <StatusIcon status={entry.prizeType ? "check" : "minus"} />

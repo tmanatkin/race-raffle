@@ -228,7 +228,6 @@ export default function Home() {
         {status === null ? (
           <BibCardForm
             bibNumber={bibNumber}
-            highestBibNumber={highestBibNumber ?? 0}
             onBibNumberChange={setBibNumber}
             onSubmit={checkBibNumber}
             isSubmitting={isSubmitting}
@@ -237,7 +236,6 @@ export default function Home() {
         ) : checkedBibNumber !== null ? (
           <BibCardResult
             bibNumber={checkedBibNumber}
-            highestBibNumber={highestBibNumber ?? checkedBibNumber}
             onCheckAnotherBibNumber={checkAnotherBibNumber}
             isOnPrimaryBackground={isWinner}
           />
