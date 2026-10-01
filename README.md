@@ -1,6 +1,6 @@
 # Race Raffle
 
-Walk-up prize raffle with prize pickup tracking for race fundraisers.
+Self-serve raffle system for race fundraisers with verified prize pickup.
 
 ![Next.js](https://img.shields.io/badge/Next.js-222222?style=for-the-badge&logo=nextdotjs)
 ![Supabase](https://img.shields.io/badge/Supabase-222222?style=for-the-badge&logo=supabase)
