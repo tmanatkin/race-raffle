@@ -8,6 +8,8 @@ Self-serve raffle system for race fundraisers with verified prize pickup.
 ![shadcn](https://img.shields.io/badge/shadcn-222222?style=for-the-badge&logo=shadcnui)
 ![Tailwind](https://img.shields.io/badge/Tailwind-222222?style=for-the-badge&logo=tailwindcss)
 
+<img src=".github/preview.png" width="640" alt="Race Raffle">
+
 - Built for and used at the Ability First nonprofit fundraiser race in Provo, Utah
 - Racer bib number check with instant win/lose result
 - Prizes spread across check-in order so early and late finishers have the same chance
