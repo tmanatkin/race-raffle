@@ -1,6 +1,8 @@
 # Race Raffle
 
-Self-serve raffle system for race fundraisers with verified prize pickup.
+Fundraiser raffle system with fair prize distribution.
+
+<samp>&gt;</samp> Used by 150+ people at a local nonprofit event.
 
 ![Next.js](https://img.shields.io/badge/Next.js-222222?style=for-the-badge&logo=nextdotjs)
 ![Supabase](https://img.shields.io/badge/Supabase-222222?style=for-the-badge&logo=supabase)
@@ -10,7 +12,6 @@ Self-serve raffle system for race fundraisers with verified prize pickup.
 
 <img src=".github/preview.png" width="640" alt="Race Raffle">
 
-- Built for and used at the Ability First nonprofit fundraiser race in Provo, Utah
 - Racer bib number check with instant win/lose result
 - Prizes spread across check-in order so early and late finishers have the same chance
 - Prize table lookup for marking prizes as picked up
